@@ -94,9 +94,9 @@ single_flip2 = function(input_matrix, B, J, rx, ry, n_rows, n_cols) {
   fo = input_matrix[rx, ry]
   en_diff = energy_diff(fo, nb, B, J)
   if (en_diff <= 0){ #<= or <?
-    input_matrix[rx, ry] = -input_matrix[rx, ry]
+    input_matrix[rx, ry] = -fo
   } else if (stats::runif(1) < exp(-en_diff)){
-    input_matrix[rx, ry] = -input_matrix[rx, ry]
+    input_matrix[rx, ry] = -fo
   }
   return(input_matrix)
 }
