@@ -1,6 +1,6 @@
 #' Title
 #'
-#' @param input_matrix
+#' @param x
 #' @param B
 #' @param J
 #' @param iter
@@ -17,11 +17,11 @@ spatial_ising = function(x, B, J, iter){
   } else {
     input_matrix = x
   }
+    n_rows = nrow(input_matrix)
+    n_cols = ncol(input_matrix)
   if (missing(iter)){
-    iter = nrow(input_matrix) * ncol(input_matrix)
+    iter = n_rows * n_cols
   }
-  n_rows = nrow(input_matrix)
-  n_cols = ncol(input_matrix)
   rxs = round(stats::runif(iter, min = 1, max = n_rows))
   rys = round(stats::runif(iter, min = 1, max = n_cols))
   for (i in seq_len(iter)){
