@@ -8,7 +8,7 @@
 A matrix
 }
 \usage{
-r_start
+data(r_start)
 }
 \description{
 A matrix has 50 columns and 50 rows. The matrix contains two values: -1 and 1.
