@@ -2,16 +2,44 @@
 % Please edit documentation in R/spatial_ising.R
 \name{spatial_ising}
 \alias{spatial_ising}
-\title{Title}
+\title{Ising model for spatial data}
 \usage{
-spatial_ising(x, B, J, iter)
+spatial_ising(x, B, J, timesteps = 1, updates, version = 1)
 }
 \arguments{
-\item{iter}{}
+\item{x}{SpatRaster or matrix containing two values: -1 and 1}
+
+\item{B}{External pressure}
+
+\item{J}{Peer pressure - it regulates a degree of local harmonization}
+
+\item{timesteps}{Specifies how many iterations are performed on the input object.
+The output of this function has as many layers as the \code{timesteps} value.}
+
+\item{updates}{Specifies how many iterations are performed on the input object.
+By default it equals to the number of values in the input object.}
+
+\item{version}{By default, \code{1}, the \code{x} object is converted into a matrix
+(fast, but can be memory consuming); \code{version = 2} has a lower RAM impact, but
+is much slower}
 }
 \value{
-
+Object of the same class as \code{x} with the number of layers specified by \code{timesteps}
 }
 \description{
-Title
+Performs simulations based on the given parameters of the Ising model
+}
+\examples{
+data(r_start, package = "spatialising")
+ts1 = spatial_ising(r_start, B = -0.3, J = 0.7)
+ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, timesteps = 10)
+}
+\references{
+Ising, E., 1924. Beitrag zur theorie des ferro-und paramagnetismus. Ph.D. thesis, Grefe & Tiedemann.
+
+Onsager, L., 1944. Crystal statistics. I. A two-dimensional model with an order-disorder transition. Physical Review 65 (3-4), 117.
+
+Brush, S. G., 1967. History of the Lenz-Ising model. Reviews of modern physics 39 (4), 883.
+
+Cipra, B. A., 1987. An introduction to the Ising model. The American Mathematical Monthly 94 (10), 937–959.
 }
