@@ -7,6 +7,9 @@
 
 [![Codecov test
 coverage](https://codecov.io/gh/Nowosad/spatialising/branch/main/graph/badge.svg)](https://app.codecov.io/gh/Nowosad/spatialising?branch=main)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R-CMD-check](https://github.com/Nowosad/spatialising/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Nowosad/spatialising/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of spatialising is to …
