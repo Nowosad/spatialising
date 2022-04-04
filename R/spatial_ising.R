@@ -42,9 +42,9 @@
 #' plot(ri3)
 spatial_ising = function(x, B, J, timesteps = 1, updates, version = 1){
   if (timesteps > 1){
-    y = vector(mode = "list", length = timesteps)
+    y = vector(mode = "list", length = timesteps + 1)
     y[[1]] = x
-    for (i in seq_len(timesteps)[-1]){
+    for (i in seq_len(timesteps + 1)[-1]){
       y[[i]] = spatial_ising(y[[i - 1]], B, J, timesteps = 1, updates, version)
     }
     if (version == 1){
