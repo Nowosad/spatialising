@@ -50,9 +50,9 @@ spatial_ising = function(x, B, J, timesteps = 1, updates, version = 1){
     if (version == 1){
       is_output_not_matrix = !inherits(x, "matrix")
       if (is_output_not_matrix){
-        x = terra::rast(y)
+        x = terra::rast(y[-1])
       } else {
-        x = simplify2array(y)
+        x = simplify2array(y[-1])
       }
     }
   } else if (timesteps == 1){
