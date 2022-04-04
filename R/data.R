@@ -12,6 +12,7 @@ NULL
 #' A matrix has 50 columns and 50 rows. The matrix contains two values: -1 and 1.
 #'
 #' @format A matrix
+#' @usage data(r_start)
 "r_start"
 
 #' An example matrix object
@@ -20,4 +21,5 @@ NULL
 #' This object was created with `r_end = spatial_ising(r_start, B = -0.3, J = 0.7)`
 #'
 #' @format A matrix
+#' @usage data(r_end)
 "r_end"

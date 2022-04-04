@@ -11,9 +11,10 @@ r_start = classify(r_start, rcl)
 plot(r_start)
 writeRaster(r_start, "inst/raster/r_start.tif", gdal = "of=COG", overwrite = TRUE)
 r_start = as.matrix(r_start, wide = TRUE)
-usethis::use_data(r_start)
+usethis::use_data(r_start, overwrite = TRUE)
 
 set.seed(2022-04-04)
 r_end = spatial_ising(r_start, B = -0.3, J = 0.7)
-usethis::use_data(r_end)
+usethis::use_data(r_end, overwrite = TRUE)
+
 
