@@ -39,15 +39,24 @@ library(terra)
 library(spatialising)
 r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
 plot(r1)
+```
+
+```{r}
 r2 = spatial_ising(r1, B = -0.3, J = 0.7)
 plot(r2)
+```
 
+```{r}
 ri1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 9)
 plot(ri1)
+```
 
+```{r}
 ri2 = spatial_ising(r1, B = 0.3, J = 0.7, timesteps = 9)
 plot(ri2)
+```
 
+```{r}
 ri3 = spatial_ising(r1, B = -0.3, J = 0.4, timesteps = 9)
 plot(ri3)
 ```

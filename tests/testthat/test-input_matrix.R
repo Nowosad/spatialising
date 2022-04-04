@@ -6,6 +6,6 @@ ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, timesteps = 10)
 
 test_that("calculations on matrices works", {
   expect_equal(dim(ts1), c(50, 50))
-  expect_equal(dim(ts10), c(50, 50, 10))
+  expect_equal(dim(ts10), c(50, 50, 9))
   expect_equal(ts1, r_end)
 })

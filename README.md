@@ -42,28 +42,28 @@ r2 = spatial_ising(r1, B = -0.3, J = 0.7)
 plot(r2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
 ``` r
 ri1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 9)
 plot(ri1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-3.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ``` r
 ri2 = spatial_ising(r1, B = 0.3, J = 0.7, timesteps = 9)
 plot(ri2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-4.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
 ``` r
 ri3 = spatial_ising(r1, B = -0.3, J = 0.4, timesteps = 9)
 plot(ri3)
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-5.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
 ## Contribution
 
