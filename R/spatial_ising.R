@@ -25,6 +25,21 @@
 #' data(r_start, package = "spatialising")
 #' ts1 = spatial_ising(r_start, B = -0.3, J = 0.7)
 #' ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, timesteps = 10)
+#'
+#' library(terra)
+#' r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
+#' plot(r1)
+#' r2 = spatial_ising(r1, B = -0.3, J = 0.7)
+#' plot(r2)
+#'
+#' ri1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 9)
+#' plot(ri1)
+#'
+#' ri2 = spatial_ising(r1, B = 0.3, J = 0.7, timesteps = 9)
+#' plot(ri2)
+#'
+#' ri3 = spatial_ising(r1, B = -0.3, J = 0.4, timesteps = 9)
+#' plot(ri3)
 spatial_ising = function(x, B, J, timesteps = 1, updates, version = 1){
   if (timesteps > 1){
     y = vector(mode = "list", length = timesteps)
