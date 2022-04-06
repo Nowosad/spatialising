@@ -34,31 +34,31 @@ devtools::install_github("Nowosad/spatialising")
 
 ## Example
 
-```{r}
+```{r, fig.height=3}
 library(terra)
 library(spatialising)
 r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
 plot(r1)
 ```
 
-```{r}
+```{r, fig.height=3}
 r2 = spatial_ising(r1, B = -0.3, J = 0.7)
 plot(r2)
 ```
 
-```{r}
-ri1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 9)
-plot(ri1)
+```{r, fig.asp=0.3}
+ri1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 3)
+plot(ri1, nr = 1)
 ```
 
-```{r}
-ri2 = spatial_ising(r1, B = 0.3, J = 0.7, timesteps = 9)
-plot(ri2)
+```{r, fig.asp=0.3}
+ri2 = spatial_ising(r1, B = 0.3, J = 0.7, timesteps = 3)
+plot(ri2, nr = 1)
 ```
 
-```{r}
-ri3 = spatial_ising(r1, B = -0.3, J = 0.4, timesteps = 9)
-plot(ri3)
+```{r, fig.asp=0.3}
+ri3 = spatial_ising(r1, B = -0.3, J = 0.4, timesteps = 3)
+plot(ri3, nr = 1)
 ```
 
 

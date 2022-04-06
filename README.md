@@ -29,7 +29,7 @@ devtools::install_github("Nowosad/spatialising")
 
 ``` r
 library(terra)
-#> terra 1.5.24
+#> terra 1.5.26
 library(spatialising)
 r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
 plot(r1)
@@ -45,22 +45,22 @@ plot(r2)
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
 ``` r
-ri1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 9)
-plot(ri1)
+ri1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 3)
+plot(ri1, nr = 1)
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ``` r
-ri2 = spatial_ising(r1, B = 0.3, J = 0.7, timesteps = 9)
-plot(ri2)
+ri2 = spatial_ising(r1, B = 0.3, J = 0.7, timesteps = 3)
+plot(ri2, nr = 1)
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
 ``` r
-ri3 = spatial_ising(r1, B = -0.3, J = 0.4, timesteps = 9)
-plot(ri3)
+ri3 = spatial_ising(r1, B = -0.3, J = 0.4, timesteps = 3)
+plot(ri3, nr = 1)
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
