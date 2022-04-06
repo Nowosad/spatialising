@@ -34,6 +34,10 @@ devtools::install_github("Nowosad/spatialising")
 
 ## Example
 
+```{r, echo=FALSE}
+set.seed(2022-04-06)
+```
+
 ```{r, fig.height=3}
 library(terra)
 library(spatialising)
