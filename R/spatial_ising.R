@@ -70,8 +70,9 @@ spatial_ising = function(x, B, J, timesteps = 1, updates, version = 1){
     }
     rxs = round(stats::runif(updates, min = 1, max = n_rows))
     rys = round(stats::runif(updates, min = 1, max = n_cols))
+    runif_1 = stats::runif(n_rows * n_cols)
     for (i in seq_len(updates)){
-      x = single_flip2(x, B, J, rxs[i], rys[i], n_rows, n_cols)
+      x = single_flip2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
     }
     if (version == 1){
       if (is_output_not_matrix){
@@ -125,7 +126,22 @@ single_flip = function(input_matrix, B, J) {
   }
   return(input_matrix)
 }
-single_flip2 = function(input_matrix, B, J, rx, ry, n_rows, n_cols) {
+# > bench::mark({is1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 250)})
+
+energy_diff2 = function(focal, neigh, B, J) {
+  if (neigh == 4) {
+    2 * (B + 4 * J) * focal
+  } else if (neigh == 2) {
+    2 * (B + 2 * J) * focal
+  } else if (neigh == 0) {
+    2 * (B + 0 * J) * focal
+  } else if (neigh == -2) {
+    2 * (B - 2 * J) * focal
+  } else if (neigh == -4) {
+    2 * (B - 4 * J) * focal
+  }
+}
+single_flip2 = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols) {
   # choose random spin
   if (missing(rx)){
     rx = round(stats::runif(1, min = 1, max = n_rows))
@@ -137,10 +153,10 @@ single_flip2 = function(input_matrix, B, J, rx, ry, n_rows, n_cols) {
   nb = input_matrix[(rx %% n_rows) + 1, ry] + input_matrix[((rx - 2) %% n_rows) + 1, ry] +
     input_matrix[rx, (ry %% n_cols) + 1] + input_matrix[rx, ((ry - 2) %% n_cols) + 1]
   fo = input_matrix[rx, ry]
-  en_diff = energy_diff(fo, nb, B, J)
+  en_diff = energy_diff2(fo, nb, B, J)
   if (en_diff <= 0){ #<= or <?
     input_matrix[rx, ry] = -fo
-  } else if (stats::runif(1) < exp(-en_diff)){
+  } else if (rn < exp(-en_diff)){
     input_matrix[rx, ry] = -fo
   }
   return(input_matrix)
