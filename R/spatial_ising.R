@@ -70,7 +70,7 @@ spatial_ising = function(x, B, J, timesteps = 1, updates, version = 1){
     }
     rxs = round(stats::runif(updates, min = 1, max = n_rows))
     rys = round(stats::runif(updates, min = 1, max = n_cols))
-    runif_1 = stats::runif(n_rows * n_cols)
+    runif_1 = stats::runif(updates)
     for (i in seq_len(updates)){
       x = single_flip2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
     }
