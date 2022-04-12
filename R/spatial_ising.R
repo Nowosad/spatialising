@@ -44,9 +44,12 @@ spatial_ising = function(x, B, J, timesteps = 1, updates, version = 1){
   if (timesteps > 1){
     y = vector(mode = "list", length = timesteps + 1)
     y[[1]] = x
+    pb = utils::txtProgressBar(min = 2, max = timesteps + 1, style = 3)
     for (i in seq_len(timesteps + 1)[-1]){
       y[[i]] = spatial_ising(y[[i - 1]], B, J, timesteps = 1, updates, version)
+      utils::setTxtProgressBar(pb, i)
     }
+    close(pb)
     if (version == 1){
       is_output_not_matrix = !inherits(x, "matrix")
       if (is_output_not_matrix){
