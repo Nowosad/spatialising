@@ -143,12 +143,12 @@ energy_diff2 = function(focal, neigh, B, J) {
 }
 single_flip2 = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols) {
   # choose random spin
-  if (missing(rx)){
-    rx = round(stats::runif(1, min = 1, max = n_rows))
-  }
-  if (missing(ry)){
-    ry = round(stats::runif(1, min = 1, max = n_cols))
-  }
+  # if (missing(rx)){
+  #   rx = round(stats::runif(1, min = 1, max = n_rows))
+  # }
+  # if (missing(ry)){
+  #   ry = round(stats::runif(1, min = 1, max = n_cols))
+  # }
   # neighbor sum
   nb = input_matrix[(rx %% n_rows) + 1, ry] + input_matrix[((rx - 2) %% n_rows) + 1, ry] +
     input_matrix[rx, (ry %% n_cols) + 1] + input_matrix[rx, ((ry - 2) %% n_cols) + 1]
