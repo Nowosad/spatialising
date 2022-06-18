@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spatialising</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3</span>
       </span>
     </div>
 
@@ -50,31 +50,50 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">spatial_ising</span><span class="op">(</span><span class="va">x</span>, <span class="va">B</span>, <span class="va">J</span>, timesteps <span class="op">=</span> <span class="fl">1</span>, <span class="va">updates</span>, version <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">spatial_ising</span><span class="op">(</span><span class="va">x</span>, <span class="va">B</span>, <span class="va">J</span>, timesteps <span class="op">=</span> <span class="fl">1</span>, <span class="va">updates</span>, version <span class="op">=</span> <span class="fl">1</span>, progress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>SpatRaster or matrix containing two values: -1 and 1</p></dd>
+
+
 <dt>B</dt>
 <dd><p>External pressure</p></dd>
+
+
 <dt>J</dt>
 <dd><p>Peer pressure - it regulates a degree of local harmonization</p></dd>
+
+
 <dt>timesteps</dt>
 <dd><p>Specifies how many iterations are performed on the input object.
 The output of this function has as many layers as the <code>timesteps</code> value.</p></dd>
+
+
 <dt>updates</dt>
 <dd><p>Specifies how many iterations are performed on the input object.
 By default it equals to the number of values in the input object.</p></dd>
+
+
 <dt>version</dt>
 <dd><p>By default, <code>1</code>, the <code>x</code> object is converted into a matrix
 (fast, but can be memory consuming); <code>version = 2</code> has a lower RAM impact, but
 is much slower</p></dd>
+
+
+<dt>progress</dt>
+<dd><p>TRUE/FALSE</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Object of the same class as <code>x</code> with the number of layers specified by <code>timesteps</code></p>
+    
+
+<p>Object of the same class as <code>x</code> with the number of layers specified by <code>timesteps</code></p>
+
+
     </div>
     <div id="references">
     <h2>References</h2>
@@ -92,7 +111,7 @@ is much slower</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |========                                                              |  11%  |                                                                              |================                                                      |  22%  |                                                                              |=======================                                               |  33%  |                                                                              |===============================                                       |  44%  |                                                                              |=======================================                               |  56%  |                                                                              |===============================================                       |  67%  |                                                                              |======================================================                |  78%  |                                                                              |==============================================================        |  89%  |                                                                              |======================================================================| 100%</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/terra/" class="external-link">terra</a></span><span class="op">)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> terra 1.5.21</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> terra 1.5.34</span>
 <span class="r-in"><span class="va">r1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"raster/r_start.tif"</span>, package <span class="op">=</span> <span class="st">"spatialising"</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">r1</span><span class="op">)</span></span>
 <span class="r-plt img"><img src="spatial_ising-1.png" alt="" width="700" height="433"></span>
@@ -128,7 +147,7 @@ is much slower</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
