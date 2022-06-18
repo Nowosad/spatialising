@@ -4,7 +4,7 @@
 \alias{spatial_ising}
 \title{Ising model for spatial data}
 \usage{
-spatial_ising(x, B, J, timesteps = 1, updates, version = 1)
+spatial_ising(x, B, J, timesteps = 1, updates, version = 1, progress = TRUE)
 }
 \arguments{
 \item{x}{SpatRaster or matrix containing two values: -1 and 1}
@@ -22,6 +22,8 @@ By default it equals to the number of values in the input object.}
 \item{version}{By default, \code{1}, the \code{x} object is converted into a matrix
 (fast, but can be memory consuming); \code{version = 2} has a lower RAM impact, but
 is much slower}
+
+\item{progress}{TRUE/FALSE}
 }
 \value{
 Object of the same class as \code{x} with the number of layers specified by \code{timesteps}

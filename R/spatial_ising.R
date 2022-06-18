@@ -12,6 +12,7 @@
 #' @param version By default, `1`, the `x` object is converted into a matrix
 #' (fast, but can be memory consuming); `version = 2` has a lower RAM impact, but
 #' is much slower
+#' @param progress TRUE/FALSE
 #'
 #' @references Ising, E., 1924. Beitrag zur theorie des ferro-und paramagnetismus. Ph.D. thesis, Grefe & Tiedemann.
 #' @references Onsager, L., 1944. Crystal statistics. I. A two-dimensional model with an order-disorder transition. Physical Review 65 (3-4), 117.
@@ -40,16 +41,16 @@
 #'
 #' ri3 = spatial_ising(r1, B = -0.3, J = 0.4, timesteps = 9)
 #' plot(ri3)
-spatial_ising = function(x, B, J, timesteps = 1, updates, version = 1){
+spatial_ising = function(x, B, J, timesteps = 1, updates, version = 1, progress = TRUE){
   if (timesteps > 1){
     y = vector(mode = "list", length = timesteps + 1)
     y[[1]] = x
-    pb = utils::txtProgressBar(min = 2, max = timesteps + 1, style = 3)
+    if (progress) pb = utils::txtProgressBar(min = 2, max = timesteps + 1, style = 3)
     for (i in seq_len(timesteps + 1)[-1]){
       y[[i]] = spatial_ising(y[[i - 1]], B, J, timesteps = 1, updates, version)
-      utils::setTxtProgressBar(pb, i)
+      if (progress) utils::setTxtProgressBar(pb, i)
     }
-    close(pb)
+    if (progress) close(pb)
     if (version == 1){
       is_output_not_matrix = !inherits(x, "matrix")
       if (is_output_not_matrix){
