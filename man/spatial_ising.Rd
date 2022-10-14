@@ -4,7 +4,7 @@
 \alias{spatial_ising}
 \title{Ising model for spatial data}
 \usage{
-spatial_ising(x, B, J, timesteps = 1, updates, version = 1, progress = TRUE)
+spatial_ising(x, B, J, updates = 1, iter, version = 1, progress = TRUE)
 }
 \arguments{
 \item{x}{SpatRaster or matrix containing two values: -1 and 1}
@@ -13,10 +13,10 @@ spatial_ising(x, B, J, timesteps = 1, updates, version = 1, progress = TRUE)
 
 \item{J}{Peer pressure - it regulates a degree of local harmonization}
 
-\item{timesteps}{Specifies how many iterations are performed on the input object.
-The output of this function has as many layers as the \code{timesteps} value.}
+\item{updates}{Specifies how many sets of iterations are performed on the input object.
+The output of this function has as many layers as the \code{updates} value.}
 
-\item{updates}{Specifies how many iterations are performed on the input object.
+\item{iter}{Specifies how many iterations are performed on the input object.
 By default it equals to the number of values in the input object.}
 
 \item{version}{By default, \code{1}, the \code{x} object is converted into a matrix
@@ -26,7 +26,7 @@ is much slower}
 \item{progress}{TRUE/FALSE}
 }
 \value{
-Object of the same class as \code{x} with the number of layers specified by \code{timesteps}
+Object of the same class as \code{x} with the number of layers specified by \code{updates}
 }
 \description{
 Performs simulations based on the given parameters of the Ising model
@@ -34,7 +34,7 @@ Performs simulations based on the given parameters of the Ising model
 \examples{
 data(r_start, package = "spatialising")
 ts1 = spatial_ising(r_start, B = -0.3, J = 0.7)
-ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, timesteps = 10)
+ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, updates = 10)
 
 library(terra)
 r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
@@ -42,13 +42,13 @@ plot(r1)
 r2 = spatial_ising(r1, B = -0.3, J = 0.7)
 plot(r2)
 
-ri1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 9)
+ri1 = spatial_ising(r1, B = -0.3, J = 0.7, updates = 9)
 plot(ri1)
 
-ri2 = spatial_ising(r1, B = 0.3, J = 0.7, timesteps = 9)
+ri2 = spatial_ising(r1, B = 0.3, J = 0.7, updates = 9)
 plot(ri2)
 
-ri3 = spatial_ising(r1, B = -0.3, J = 0.4, timesteps = 9)
+ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 9)
 plot(ri3)
 }
 \references{

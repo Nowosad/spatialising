@@ -5,9 +5,9 @@
 #' @param x SpatRaster or matrix containing two values: -1 and 1
 #' @param B External pressure
 #' @param J Peer pressure - it regulates a degree of local harmonization
-#' @param timesteps Specifies how many iterations are performed on the input object.
-#' The output of this function has as many layers as the `timesteps` value.
-#' @param updates Specifies how many iterations are performed on the input object.
+#' @param updates Specifies how many sets of iterations are performed on the input object.
+#' The output of this function has as many layers as the `updates` value.
+#' @param iter Specifies how many iterations are performed on the input object.
 #' By default it equals to the number of values in the input object.
 #' @param version By default, `1`, the `x` object is converted into a matrix
 #' (fast, but can be memory consuming); `version = 2` has a lower RAM impact, but
@@ -19,13 +19,13 @@
 #' @references Brush, S. G., 1967. History of the Lenz-Ising model. Reviews of modern physics 39 (4), 883.
 #' @references Cipra, B. A., 1987. An introduction to the Ising model. The American Mathematical Monthly 94 (10), 937–959.
 #'
-#' @return Object of the same class as `x` with the number of layers specified by `timesteps`
+#' @return Object of the same class as `x` with the number of layers specified by `updates`
 #' @export
 #'
 #' @examples
 #' data(r_start, package = "spatialising")
 #' ts1 = spatial_ising(r_start, B = -0.3, J = 0.7)
-#' ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, timesteps = 10)
+#' ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, updates = 10)
 #'
 #' library(terra)
 #' r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
@@ -33,21 +33,21 @@
 #' r2 = spatial_ising(r1, B = -0.3, J = 0.7)
 #' plot(r2)
 #'
-#' ri1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 9)
+#' ri1 = spatial_ising(r1, B = -0.3, J = 0.7, updates = 9)
 #' plot(ri1)
 #'
-#' ri2 = spatial_ising(r1, B = 0.3, J = 0.7, timesteps = 9)
+#' ri2 = spatial_ising(r1, B = 0.3, J = 0.7, updates = 9)
 #' plot(ri2)
 #'
-#' ri3 = spatial_ising(r1, B = -0.3, J = 0.4, timesteps = 9)
+#' ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 9)
 #' plot(ri3)
-spatial_ising = function(x, B, J, timesteps = 1, updates, version = 1, progress = TRUE){
-  if (timesteps > 1){
-    y = vector(mode = "list", length = timesteps + 1)
+spatial_ising = function(x, B, J, updates = 1, iter, version = 1, progress = TRUE){
+  if (updates > 1){
+    y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
-    if (progress) pb = utils::txtProgressBar(min = 2, max = timesteps + 1, style = 3)
-    for (i in seq_len(timesteps + 1)[-1]){
-      y[[i]] = spatial_ising(y[[i - 1]], B, J, timesteps = 1, updates, version)
+    if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
+    for (i in seq_len(updates + 1)[-1]){
+      y[[i]] = spatial_ising(y[[i - 1]], B, J, updates = 1, iter, version)
       if (progress) utils::setTxtProgressBar(pb, i)
     }
     if (progress) close(pb)
@@ -59,7 +59,7 @@ spatial_ising = function(x, B, J, timesteps = 1, updates, version = 1, progress 
         x = simplify2array(y[-1])
       }
     }
-  } else if (timesteps == 1){
+  } else if (updates == 1){
     if (version == 1){
       is_output_not_matrix = !inherits(x, "matrix")
       if (is_output_not_matrix){
@@ -69,13 +69,13 @@ spatial_ising = function(x, B, J, timesteps = 1, updates, version = 1, progress 
       }
     }
     n_rows = nrow(x); n_cols = ncol(x)
-    if (missing(updates)){
-      updates = n_rows * n_cols
+    if (missing(iter)){
+      iter = n_rows * n_cols
     }
-    rxs = round(stats::runif(updates, min = 1, max = n_rows))
-    rys = round(stats::runif(updates, min = 1, max = n_cols))
-    runif_1 = stats::runif(updates)
-    for (i in seq_len(updates)){
+    rxs = round(stats::runif(iter, min = 1, max = n_rows))
+    rys = round(stats::runif(iter, min = 1, max = n_cols))
+    runif_1 = stats::runif(iter)
+    for (i in seq_len(iter)){
       x = single_flip2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
     }
     if (version == 1){
@@ -130,7 +130,7 @@ single_flip = function(input_matrix, B, J) {
   }
   return(input_matrix)
 }
-# > bench::mark({is1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 250)})
+# > bench::mark({is1 = spatial_ising(r1, B = -0.3, J = 0.7, updates = 250)})
 
 energy_diff2 = function(focal, neigh, B, J) {
   if (neigh == 4) {
