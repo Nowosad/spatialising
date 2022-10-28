@@ -19,6 +19,9 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
+    <loc>/reference/magnetization.html</loc>
+  </url>
+  <url>
     <loc>/reference/r_end.html</loc>
   </url>
   <url>
@@ -29,5 +32,14 @@
   </url>
   <url>
     <loc>/reference/spatial_ising.html</loc>
+  </url>
+  <url>
+    <loc>/reference/spatial_ising_ensemble.html</loc>
+  </url>
+  <url>
+    <loc>/reference/spatial_ising_exemplar.html</loc>
+  </url>
+  <url>
+    <loc>/reference/texture_index.html</loc>
   </url>
 </urlset>
