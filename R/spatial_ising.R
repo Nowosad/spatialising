@@ -43,6 +43,7 @@
 #' # plot(ri3)
 spatial_ising = function(x, B, J, updates = 1, iter, version = 1, progress = TRUE){
   if (is.character(x)){
+    is_char = TRUE
     x = terra::rast(x)
   }
   if (updates > 1){
@@ -86,6 +87,9 @@ spatial_ising = function(x, B, J, updates = 1, iter, version = 1, progress = TRU
         x = terra::rast(x, crs = x_crs, extent = x_ext)
       }
     }
+  }
+  if (is_char){
+    x = wrap(x)
   }
   return(x)
 }
