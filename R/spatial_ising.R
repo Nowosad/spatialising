@@ -87,11 +87,10 @@ spatial_ising = function(x, B, J, updates = 1, iter, version = 1, progress = TRU
         x = terra::rast(x, crs = x_crs, extent = x_ext)
       }
     }
-    if (is_char){
-      x = wrap(x)
-    }
   }
-
+  if (is_char){
+    x = wrap(x)
+  }
   return(x)
 }
 energy_diff = function(focal, neigh, B, J){
