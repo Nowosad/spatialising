@@ -33,15 +33,18 @@
 #' r2 = spatial_ising(r1, B = -0.3, J = 0.7)
 #' plot(r2)
 #'
-#' ri1 = spatial_ising(r1, B = -0.3, J = 0.7, updates = 9)
-#' plot(ri1)
+#' # ri1 = spatial_ising(r1, B = -0.3, J = 0.7, updates = 9)
+#' # plot(ri1)
 #'
-#' ri2 = spatial_ising(r1, B = 0.3, J = 0.7, updates = 9)
-#' plot(ri2)
+#' # ri2 = spatial_ising(r1, B = 0.3, J = 0.7, updates = 9)
+#' # plot(ri2)
 #'
-#' ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 9)
-#' plot(ri3)
+#' # ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 9)
+#' # plot(ri3)
 spatial_ising = function(x, B, J, updates = 1, iter, version = 1, progress = TRUE){
+  if (is.character(x)){
+    x = terra::rast(x)
+  }
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x

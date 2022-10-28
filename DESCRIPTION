@@ -1,6 +1,6 @@
 Package: spatialising
 Title: Ising Model for Spatial Data
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(
     person(given = "Jakub", family = "Nowosad", 
     role = c("aut", "cre"),
@@ -16,6 +16,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Imports:
+    comat,
     terra
 URL: https://github.com/Nowosad/spatialising
 BugReports: https://github.com/Nowosad/spatialising/issues

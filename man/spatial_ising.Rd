@@ -42,14 +42,14 @@ plot(r1)
 r2 = spatial_ising(r1, B = -0.3, J = 0.7)
 plot(r2)
 
-ri1 = spatial_ising(r1, B = -0.3, J = 0.7, updates = 9)
-plot(ri1)
+# ri1 = spatial_ising(r1, B = -0.3, J = 0.7, updates = 9)
+# plot(ri1)
 
-ri2 = spatial_ising(r1, B = 0.3, J = 0.7, updates = 9)
-plot(ri2)
+# ri2 = spatial_ising(r1, B = 0.3, J = 0.7, updates = 9)
+# plot(ri2)
 
-ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 9)
-plot(ri3)
+# ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 9)
+# plot(ri3)
 }
 \references{
 Ising, E., 1924. Beitrag zur theorie des ferro-und paramagnetismus. Ph.D. thesis, Grefe & Tiedemann.
