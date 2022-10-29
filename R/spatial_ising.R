@@ -42,10 +42,10 @@
 #' # ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 9)
 #' # plot(ri3)
 spatial_ising = function(x, B, J, updates = 1, iter, version = 1, progress = TRUE){
-  if (is.character(x)){
-    is_char = TRUE
-    x = terra::rast(x)
-  }
+  # if (is.character(x)){
+  #   is_char = TRUE
+  #   x = terra::rast(x)
+  # }
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
@@ -88,9 +88,9 @@ spatial_ising = function(x, B, J, updates = 1, iter, version = 1, progress = TRU
       }
     }
   }
-  if (is_char){
-    x = wrap(x)
-  }
+  # if (is_char){
+  #   x = wrap(x)
+  # }
   return(x)
 }
 energy_diff = function(focal, neigh, B, J){
