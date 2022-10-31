@@ -1,6 +1,9 @@
 #' Magnetization
 #'
-#' Calculated magnetization
+#' Calculates magnetization (m) -- a sum of cell’s values
+#' over the entire site divided by the number of cell in the site.
+#' m has a range from -1 (site completely dominated by the -1 values) to
+#' 1 (site completely dominated by the 1 values).
 #'
 #' @param x SpatRaster or matrix containing two values: -1 and 1
 #'
@@ -31,7 +34,9 @@ magnetization = function(x){
 }
 #' Texture index
 #'
-#' Calculates texture index
+#' Calculates texture index -- an average over the entire site of the value of
+#' products the values of neighboring cells.
+#' The value of texture index is between 0 (fine texture), and 1 (coarse texture).
 #'
 #' @param x SpatRaster or matrix containing two values: -1 and 1
 #' @param ... Arguments for [comat::get_coma()]

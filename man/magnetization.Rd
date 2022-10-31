@@ -13,7 +13,10 @@ magnetization(x)
 A numeric vector
 }
 \description{
-Calculated magnetization
+Calculates magnetization (m) -- a sum of cell’s values
+over the entire site divided by the number of cell in the site.
+m has a range from -1 (site completely dominated by the -1 values) to
+1 (site completely dominated by the 1 values).
 }
 \examples{
 data(r_start, package = "spatialising")

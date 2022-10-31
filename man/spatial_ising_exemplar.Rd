@@ -2,7 +2,7 @@
 % Please edit documentation in R/spatial_ising_ensemble.R
 \name{spatial_ising_exemplar}
 \alias{spatial_ising_exemplar}
-\title{Exemplar of Ising models for spatial data}
+\title{Exemplar of an Ising model for spatial data}
 \usage{
 spatial_ising_exemplar(runs, ...)
 }
@@ -15,7 +15,9 @@ spatial_ising_exemplar(runs, ...)
 Object of the same class as \code{x}
 }
 \description{
-Exemplar of Ising models for spatial data
+Creates an ensemble of simulations based on the given parameters
+of the Ising model and selects an exemplar
+(a model that is closest to the average of the ensemble)
 }
 \examples{
 data(r_start, package = "spatialising")

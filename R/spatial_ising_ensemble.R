@@ -22,7 +22,11 @@ spatial_ising_ensemble = function(runs, ...){
 }
 
 
-#' Exemplar of Ising models for spatial data
+#' Exemplar of an Ising model for spatial data
+#'
+#' Creates an ensemble of simulations based on the given parameters
+#' of the Ising model and selects an exemplar
+#' (a model that is closest to the average of the ensemble)
 #'
 #' @param runs A number of simulations to perform
 #' @param ... Arguments for [spatial_ising()]

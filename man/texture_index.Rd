@@ -15,7 +15,9 @@ texture_index(x, ...)
 A numeric vector
 }
 \description{
-Calculates texture index
+Calculates texture index -- an average over the entire site of the value of
+products the values of neighboring cells.
+The value of texture index is between 0 (fine texture), and 1 (coarse texture).
 }
 \examples{
 data(r_start, package = "spatialising")
