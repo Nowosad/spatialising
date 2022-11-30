@@ -48,15 +48,13 @@ spatial_ising_exemplar = function(runs, ...){
   nlayers = ifelse(is.na(dim(l[[1]])[3]), 1, dim(l[[1]])[3])
   lc = vapply(l, magnetization, numeric(nlayers))
   la = vapply(l, texture_index, numeric(nlayers))
-  if(inherits(lc, "matrix")){
+  if(inherits(lc, "matrix")){ #updates >1
     lc = t(lc)
     la = t(la)
     avg_metrics = c(colMeans(lc), colMeans(la))
-  } else {
+  } else { #updates == 1
     avg_metrics = cbind(mean(lc), mean(la))
   }
-  # lc = vapply(l, magnetization, numeric(1))
-  # la = vapply(l, texture_index, numeric(1))
   l_metrics = cbind(lc, la)
   all_metrics = rbind(avg_metrics, l_metrics)
   dist_to_avg = as.matrix(stats::dist(all_metrics))[, 1][-1]
