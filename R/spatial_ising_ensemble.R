@@ -45,10 +45,18 @@ spatial_ising_ensemble = function(runs, ...){
 #' # plot(r2)
 spatial_ising_exemplar = function(runs, ...){
   l = spatial_ising_ensemble(runs = runs, ...)
-  lc = vapply(l, magnetization, numeric(1))
-  la = vapply(l, texture_index, numeric(1))
-  l_metrics = cbind(lc, la)
-  avg_metrics = cbind(mean(lc), mean(la))
+  lc = vapply(l, magnetization, numeric(dim(l[[1]])[3]))
+  la = vapply(l, texture_index, numeric(dim(l[[1]])[3]))
+  if(inherits(lc, "matrix")){
+    lc = t(lc)
+    la = t(la)
+    avg_metrics = c(colMeans(lc), colMeans(la))
+  } else {
+    avg_metrics = cbind(mean(lc), mean(la))
+  }
+  # lc = vapply(l, magnetization, numeric(1))
+  # la = vapply(l, texture_index, numeric(1))
+  l_metrics = cbind(la, la)
   all_metrics = rbind(avg_metrics, l_metrics)
   dist_to_avg = as.matrix(stats::dist(all_metrics))[, 1][-1]
   l_close_to_avg = l[[which.min(dist_to_avg)]]
