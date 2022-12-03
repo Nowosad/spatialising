@@ -60,11 +60,11 @@ magnetization = function(x){
 texture_index = function(x, ...){
   if (inherits(x, "matrix")){
     coma = comat::get_coma(x, ...)
-    # if (length(coma) == 1){
-    #   return(1)
-    # } else {
+    if (length(coma) == 1){
+      return(1)
+    } else {
       return((coma[1] - coma[2] - coma[3] + coma[4]) / sum(coma))
-    # }
+    }
   } else {
     x = terra::as.array(x)
     apply(x, 3, texture_index, ...)
