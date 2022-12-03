@@ -17,5 +17,5 @@ test_that("calculations of metrics works", {
   expect_equal(length(m1), 1)
   expect_equal(length(m2), 10)
   expect_equal(length(m3), 1)
-  expect_true(is.na(ti3))
+  expect_true(ti3 == 1)
 })
