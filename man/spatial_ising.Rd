@@ -4,7 +4,16 @@
 \alias{spatial_ising}
 \title{Ising model for spatial data}
 \usage{
-spatial_ising(x, B, J, updates = 1, iter, version = 1, progress = TRUE)
+spatial_ising(
+  x,
+  B,
+  J,
+  updates = 1,
+  iter,
+  rule = "metropolis",
+  version = 1,
+  progress = TRUE
+)
 }
 \arguments{
 \item{x}{SpatRaster or matrix containing two values: -1 and 1}
