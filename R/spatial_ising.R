@@ -42,36 +42,47 @@
 #' # ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 9)
 #' # plot(ri3)
 spatial_ising = function(x, B, J, updates = 1, iter, version = 1, progress = TRUE){
-  # if (is.character(x)){
-  #   is_char = TRUE
-  #   x = terra::rast(x)
+  if (is.character(x)){
+    is_char = TRUE
+    x = terra::rast(x)
+  }
+  if (version == 1){
+    is_output_not_matrix = !inherits(x, "matrix")
+    if (is_output_not_matrix){
+      x_ext = terra::ext(x)
+      x_crs = terra::crs(x)
+      x = terra::as.matrix(x, wide = TRUE)
+    }
+    x = spatial_ising_version1(x = x, B = B, J = J, updates = updates,
+                               iter = iter, progress = progress)
+    if (is_output_not_matrix){
+      x = terra::rast(x, crs = x_crs, extent = x_ext)
+      names(x) = paste0("update", seq_len(updates))
+    }
+
+  } else if (version == 2){
+    x = spatial_ising_version2(x = x, B = B, J = J, updates = updates,
+                               iter = iter, progress = progress)
+    names(x) = paste0("update", seq_len(updates))
+  }
+  # if (is_char){
+  #   x = wrap(x)
   # }
+  return(x)
+}
+
+spatial_ising_version1 = function(x, B, J, updates = 1, iter, progress = TRUE){
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
     if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
     for (i in seq_len(updates + 1)[-1]){
-      y[[i]] = spatial_ising(y[[i - 1]], B, J, updates = 1, iter, version)
+      y[[i]] = spatial_ising_version1(y[[i - 1]], B, J, updates = 1, iter)
       if (progress) utils::setTxtProgressBar(pb, i)
     }
     if (progress) close(pb)
-    if (version == 1){
-      is_output_not_matrix = !inherits(x, "matrix")
-      if (is_output_not_matrix){
-        x = terra::rast(y[-1])
-      } else {
-        x = simplify2array(y[-1])
-      }
-    }
+    x = simplify2array(y[-1])
   } else if (updates == 1){
-    if (version == 1){
-      is_output_not_matrix = !inherits(x, "matrix")
-      if (is_output_not_matrix){
-        x_ext = terra::ext(x)
-        x_crs = terra::crs(x)
-        x = terra::as.matrix(x, wide = TRUE)
-      }
-    }
     n_rows = nrow(x); n_cols = ncol(x)
     if (missing(iter)){
       iter = n_rows * n_cols
@@ -82,17 +93,36 @@ spatial_ising = function(x, B, J, updates = 1, iter, version = 1, progress = TRU
     for (i in seq_len(iter)){
       x = single_flip2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
     }
-    if (version == 1){
-      if (is_output_not_matrix){
-        x = terra::rast(x, crs = x_crs, extent = x_ext)
-      }
-    }
   }
-  # if (is_char){
-  #   x = wrap(x)
-  # }
   return(x)
 }
+
+spatial_ising_version2 = function(x, B, J, updates = 1, iter, progress = TRUE){
+  if (updates > 1){
+    y = vector(mode = "list", length = updates + 1)
+    y[[1]] = x
+    if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
+    for (i in seq_len(updates + 1)[-1]){
+      y[[i]] = spatial_ising_version2(y[[i - 1]], B, J, updates = 1, iter)
+      if (progress) utils::setTxtProgressBar(pb, i)
+    }
+    if (progress) close(pb)
+    x = terra::rast(y[-1])
+  } else if (updates == 1){
+    n_rows = nrow(x); n_cols = ncol(x)
+    if (missing(iter)){
+      iter = n_rows * n_cols
+    }
+    rxs = round(stats::runif(iter, min = 1, max = n_rows))
+    rys = round(stats::runif(iter, min = 1, max = n_cols))
+    runif_1 = stats::runif(iter)
+    for (i in seq_len(iter)){
+      x = single_flip2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
+    }
+  }
+  return(x)
+}
+
 energy_diff = function(focal, neigh, B, J){
   if (focal == 1){
     if (neigh == 4){
