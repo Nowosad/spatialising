@@ -95,6 +95,8 @@ spatial_ising_matrix = function(x, B, J, updates = 1, iter, rule, progress = TRU
         x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
       } else if (rule == "glauber"){
         x = single_flip_glauber(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
+      } else {
+        stop()
       }
     }
   }
@@ -125,6 +127,8 @@ spatial_ising_terra = function(x, B, J, updates = 1, iter, rule, progress = TRUE
         x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
       } else if (rule == "glauber"){
         x = single_flip_glauber(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
+      } else {
+        stop()
       }
     }
   }
@@ -141,13 +145,13 @@ single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols) {
   fo = input_matrix[rx, ry]
   en_diff = energy_diff_glauber(fo, nb, B, J)
   # if ((fo == -1 && nb == -4) || (fo == 1 && nb == 4)){
-  # if (fo == -1 && nb == -4){
-  #   # print(en_diff)
-  #   Q = 10
-  #   en_diff = en_diff + Q
-  # }
+  if (fo == -1 && nb == -4){
+    # print(en_diff)
+    Q = 100
+    en_diff = en_diff + Q
+  }
   P = 1 / (1 + exp(1)^en_diff)
-  rbinom(n = 1, size = 1, prob = P)
+  # print(P)
   if (rbinom(n = 1, size = 1, prob = P)){
     input_matrix[rx, ry] = -fo
   }

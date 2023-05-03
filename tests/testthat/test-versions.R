@@ -21,6 +21,7 @@ bench::mark({set.seed(1);spatial_ising(r_startr, B = -0.3, J = 0.7, updates = 10
 
 devtools::load_all()
 bench::mark({set.seed(1);spatial_ising(r_startr, B = -0.3, J = 0.7, updates = 10, version = 1)->a1},
-            {set.seed(1);spatial_ising(r_startr, B = -0.3, J = 0.7, updates = 10, rule = "glabuer")->ab1},
+            {set.seed(1);spatial_ising(r_startr, B = -0.3, J = 0.7, updates = 10, rule = "glauber")->ab1},
             check = FALSE)
 
+# profvis::profvis(spatial_ising(r_startr, B = -0.3, J = 0.7, updates = 10, rule = "glauber")->ab1)
