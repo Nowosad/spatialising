@@ -53,7 +53,7 @@ spatial_ising = function(x, B, J, updates = 1, iter, version = 1, progress = TRU
       x_crs = terra::crs(x)
       x = terra::as.matrix(x, wide = TRUE)
     }
-    x = spatial_ising_version1(x = x, B = B, J = J, updates = updates,
+    x = spatial_ising_matrix(x = x, B = B, J = J, updates = updates,
                                iter = iter, progress = progress)
     if (is_output_not_matrix){
       x = terra::rast(x, crs = x_crs, extent = x_ext)
@@ -61,7 +61,7 @@ spatial_ising = function(x, B, J, updates = 1, iter, version = 1, progress = TRU
     }
 
   } else if (version == 2){
-    x = spatial_ising_version2(x = x, B = B, J = J, updates = updates,
+    x = spatial_ising_terra(x = x, B = B, J = J, updates = updates,
                                iter = iter, progress = progress)
     names(x) = paste0("update", seq_len(updates))
   }
@@ -71,13 +71,13 @@ spatial_ising = function(x, B, J, updates = 1, iter, version = 1, progress = TRU
   return(x)
 }
 
-spatial_ising_version1 = function(x, B, J, updates = 1, iter, progress = TRUE){
+spatial_ising_matrix = function(x, B, J, updates = 1, iter, progress = TRUE){
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
     if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
     for (i in seq_len(updates + 1)[-1]){
-      y[[i]] = spatial_ising_version1(y[[i - 1]], B, J, updates = 1, iter)
+      y[[i]] = spatial_ising_matrix(y[[i - 1]], B, J, updates = 1, iter, progress = FALSE)
       if (progress) utils::setTxtProgressBar(pb, i)
     }
     if (progress) close(pb)
@@ -97,13 +97,13 @@ spatial_ising_version1 = function(x, B, J, updates = 1, iter, progress = TRUE){
   return(x)
 }
 
-spatial_ising_version2 = function(x, B, J, updates = 1, iter, progress = TRUE){
+spatial_ising_terra = function(x, B, J, updates = 1, iter, progress = TRUE){
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
     if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
     for (i in seq_len(updates + 1)[-1]){
-      y[[i]] = spatial_ising_version2(y[[i - 1]], B, J, updates = 1, iter)
+      y[[i]] = spatial_ising_terra(y[[i - 1]], B, J, updates = 1, iter, progress = FALSE)
       if (progress) utils::setTxtProgressBar(pb, i)
     }
     if (progress) close(pb)

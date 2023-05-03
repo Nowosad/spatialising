@@ -15,6 +15,5 @@ test_that("both versions give the same results", {
 #
 # devtools::load_all()
 # bench::mark({set.seed(1);spatial_ising(r_startr, B = -0.3, J = 0.7, updates = 10, version = 1)->a},
-#             {set.seed(1);spatial_ising_version1b(r_startr, B = -0.3, J = 0.7, updates = 10)->b},
 #             {set.seed(1);spatial_ising(r_startr, B = -0.3, J = 0.7, updates = 10, version = 2)->ab},
 #             check = FALSE)
