@@ -4,7 +4,17 @@
 \alias{spatial_ising}
 \title{Ising model for spatial data}
 \usage{
-spatial_ising(x, B, J, updates = 1, iter, version = 1, progress = TRUE)
+spatial_ising(
+  x,
+  B,
+  J,
+  updates = 1,
+  iter,
+  rule = "glauber",
+  inertia = 0,
+  version = 1,
+  progress = TRUE
+)
 }
 \arguments{
 \item{x}{SpatRaster or matrix containing two values: -1 and 1}
@@ -18,6 +28,10 @@ The output of this function has as many layers as the \code{updates} value.}
 
 \item{iter}{Specifies how many iterations are performed on the input object.
 By default it equals to the number of values in the input object.}
+
+\item{rule}{IM temporal evolution rule: either \code{"glauber"} (default) or \code{"metropolis"}}
+
+\item{inertia}{Represents the modification of the algorithm aimed at suppressing the salt-and-pepper noise of the focus category present when simulating evolution of a coarse-textured pattern. With Q > 0, small patches of the focus category are not generated, thus eliminating the salt-and-pepper noise of the focus category}
 
 \item{version}{By default, \code{1}, the \code{x} object is converted into a matrix
 (fast, but can be memory consuming); \code{version = 2} has a lower RAM impact, but

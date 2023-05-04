@@ -1,7 +1,7 @@
 set.seed(2022-04-04)
 data(r_start, package = "spatialising")
 data(r_end, package = "spatialising")
-ts1 = spatial_ising(r_start, B = -0.3, J = 0.7)
+ts1 = spatial_ising(r_start, B = -0.3, J = 0.7, rule = "metropolis")
 ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, updates = 10)
 
 test_that("calculations on matrices works", {
