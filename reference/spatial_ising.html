@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spatialising</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3</span>
       </span>
     </div>
 
@@ -50,7 +50,17 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">spatial_ising</span><span class="op">(</span><span class="va">x</span>, <span class="va">B</span>, <span class="va">J</span>, updates <span class="op">=</span> <span class="fl">1</span>, <span class="va">iter</span>, version <span class="op">=</span> <span class="fl">1</span>, progress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">spatial_ising</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">B</span>,</span>
+<span>  <span class="va">J</span>,</span>
+<span>  updates <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  <span class="va">iter</span>,</span>
+<span>  rule <span class="op">=</span> <span class="st">"glauber"</span>,</span>
+<span>  inertia <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  version <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  progress <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -75,6 +85,14 @@ The output of this function has as many layers as the <code>updates</code> value
 <dt>iter</dt>
 <dd><p>Specifies how many iterations are performed on the input object.
 By default it equals to the number of values in the input object.</p></dd>
+
+
+<dt>rule</dt>
+<dd><p>IM temporal evolution rule: either <code>"glauber"</code> (default) or <code>"metropolis"</code></p></dd>
+
+
+<dt>inertia</dt>
+<dd><p>Represents the modification of the algorithm aimed at suppressing the salt-and-pepper noise of the focus category present when simulating evolution of a coarse-textured pattern. With Q &gt; 0, small patches of the focus category are not generated, thus eliminating the salt-and-pepper noise of the focus category</p></dd>
 
 
 <dt>version</dt>
