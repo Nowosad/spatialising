@@ -55,13 +55,14 @@ plot(r2)
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 The `spatial_ising()` function also has a fourth argument called
-`timesteps`. By default, it equals to `1`, returning just one raster as
+`updates`. By default, it equals to `1`, returning just one raster as
 the output. However, when given a value larger than one, it returns many
 rasters. Each new raster is the next iteration of the Ising model of the
 previous one.
 
 ``` r
-ri1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 3)
+ri1 = spatial_ising(r1, B = -0.3, J = 0.7, updates = 3)
+#>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%
 plot(ri1, nr = 1)
 ```
 
@@ -75,7 +76,8 @@ On the other hand, values of `B = 0.3` and `J = 0.7` give a somewhat
 opposite result with less cell with the yellow category:
 
 ``` r
-ri2 = spatial_ising(r1, B = 0.3, J = 0.7, timesteps = 3)
+ri2 = spatial_ising(r1, B = 0.3, J = 0.7, updates = 3)
+#>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%
 plot(ri2, nr = 1)
 ```
 
@@ -83,10 +85,11 @@ plot(ri2, nr = 1)
 
 Finally, in the last example, we set values of `B = -0.3` and `J = 0.4`.
 Note that the result shows much more prominent data change, with a
-predominance of the yellow category only after a few timesteps.
+predominance of the yellow category only after a few updates.
 
 ``` r
-ri3 = spatial_ising(r1, B = -0.3, J = 0.4, timesteps = 3)
+ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 3)
+#>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%
 plot(ri3, nr = 1)
 ```
 

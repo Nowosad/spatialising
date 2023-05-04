@@ -58,13 +58,13 @@ r2 = spatial_ising(r1, B = -0.3, J = 0.7)
 plot(r2)
 ```
 
-The `spatial_ising()` function also has a fourth argument called `timesteps`. 
+The `spatial_ising()` function also has a fourth argument called `updates`. 
 By default, it equals to `1`, returning just one raster as the output.
 However, when given a value larger than one, it returns many rasters.
 Each new raster is the next iteration of the Ising model of the previous one.
 
 ```{r, fig.asp=0.3}
-ri1 = spatial_ising(r1, B = -0.3, J = 0.7, timesteps = 3)
+ri1 = spatial_ising(r1, B = -0.3, J = 0.7, updates = 3)
 plot(ri1, nr = 1)
 ```
 
@@ -74,15 +74,15 @@ In the example above, values of `B = -0.3` and `J = 0.7` resulted in expansion o
 On the other hand, values of `B = 0.3` and `J = 0.7` give a somewhat opposite result with less cell with the yellow category:
 
 ```{r, fig.asp=0.3}
-ri2 = spatial_ising(r1, B = 0.3, J = 0.7, timesteps = 3)
+ri2 = spatial_ising(r1, B = 0.3, J = 0.7, updates = 3)
 plot(ri2, nr = 1)
 ```
 
 Finally, in the last example, we set values of `B = -0.3` and `J = 0.4`.
-Note that the result shows much more prominent data change, with a predominance of the yellow category only after a few timesteps.
+Note that the result shows much more prominent data change, with a predominance of the yellow category only after a few updates.
 
 ```{r, fig.asp=0.3}
-ri3 = spatial_ising(r1, B = -0.3, J = 0.4, timesteps = 3)
+ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 3)
 plot(ri3, nr = 1)
 ```
 
