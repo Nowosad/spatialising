@@ -11,6 +11,7 @@ spatial_ising(
   updates = 1,
   iter,
   rule = "metropolis",
+  inertia = 0,
   version = 1,
   progress = TRUE
 )
@@ -27,6 +28,10 @@ The output of this function has as many layers as the \code{updates} value.}
 
 \item{iter}{Specifies how many iterations are performed on the input object.
 By default it equals to the number of values in the input object.}
+
+\item{rule}{description}
+
+\item{inertia}{description}
 
 \item{version}{By default, \code{1}, the \code{x} object is converted into a matrix
 (fast, but can be memory consuming); \code{version = 2} has a lower RAM impact, but

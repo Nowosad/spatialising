@@ -9,6 +9,8 @@
 #' The output of this function has as many layers as the `updates` value.
 #' @param iter Specifies how many iterations are performed on the input object.
 #' By default it equals to the number of values in the input object.
+#' @param rule description
+#' @param inertia description
 #' @param version By default, `1`, the `x` object is converted into a matrix
 #' (fast, but can be memory consuming); `version = 2` has a lower RAM impact, but
 #' is much slower
@@ -41,7 +43,8 @@
 #'
 #' # ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 9)
 #' # plot(ri3)
-spatial_ising = function(x, B, J, updates = 1, iter, rule = "metropolis", version = 1, progress = TRUE){
+spatial_ising = function(x, B, J, updates = 1, iter, rule = "metropolis",
+                         inertia = 0, version = 1, progress = TRUE){
   if (is.character(x)){
     is_char = TRUE
     x = terra::rast(x)
@@ -54,7 +57,7 @@ spatial_ising = function(x, B, J, updates = 1, iter, rule = "metropolis", versio
       x = terra::as.matrix(x, wide = TRUE)
     }
     x = spatial_ising_matrix(x = x, B = B, J = J, updates = updates,
-                               iter = iter, rule = rule, progress = progress)
+                               iter = iter, rule = rule, inertia = inertia, progress = progress)
     if (is_output_not_matrix){
       x = terra::rast(x, crs = x_crs, extent = x_ext)
       names(x) = paste0("update", seq_len(updates))
@@ -62,7 +65,7 @@ spatial_ising = function(x, B, J, updates = 1, iter, rule = "metropolis", versio
 
   } else if (version == 2){
     x = spatial_ising_terra(x = x, B = B, J = J, updates = updates,
-                               iter = iter, rule = rule, progress = progress)
+                               iter = iter, rule = rule, inertia = inertia, progress = progress)
     names(x) = paste0("update", seq_len(updates))
   }
   # if (is_char){
@@ -71,13 +74,13 @@ spatial_ising = function(x, B, J, updates = 1, iter, rule = "metropolis", versio
   return(x)
 }
 
-spatial_ising_matrix = function(x, B, J, updates = 1, iter, rule, progress = TRUE){
+spatial_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia, progress = TRUE){
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
     if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
     for (i in seq_len(updates + 1)[-1]){
-      y[[i]] = spatial_ising_matrix(y[[i - 1]], B, J, updates = 1, iter, rule, progress = FALSE)
+      y[[i]] = spatial_ising_matrix(y[[i - 1]], B, J, updates = 1, iter, rule, inertia, progress = FALSE)
       if (progress) utils::setTxtProgressBar(pb, i)
     }
     if (progress) close(pb)
@@ -92,9 +95,9 @@ spatial_ising_matrix = function(x, B, J, updates = 1, iter, rule, progress = TRU
     runif_1 = stats::runif(iter)
     for (i in seq_len(iter)){
       if (rule == "metropolis"){
-        x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
+        x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols, inertia)
       } else if (rule == "glauber"){
-        x = single_flip_glauber(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
+        x = single_flip_glauber(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols, inertia)
       } else {
         stop()
       }
@@ -103,13 +106,13 @@ spatial_ising_matrix = function(x, B, J, updates = 1, iter, rule, progress = TRU
   return(x)
 }
 
-spatial_ising_terra = function(x, B, J, updates = 1, iter, rule, progress = TRUE){
+spatial_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia, progress = TRUE){
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
     if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
     for (i in seq_len(updates + 1)[-1]){
-      y[[i]] = spatial_ising_terra(y[[i - 1]], B, J, updates = 1, iter, rule, progress = FALSE)
+      y[[i]] = spatial_ising_terra(y[[i - 1]], B, J, updates = 1, iter, rule, inertia, progress = FALSE)
       if (progress) utils::setTxtProgressBar(pb, i)
     }
     if (progress) close(pb)
@@ -124,9 +127,9 @@ spatial_ising_terra = function(x, B, J, updates = 1, iter, rule, progress = TRUE
     runif_1 = stats::runif(iter)
     for (i in seq_len(iter)){
       if (rule == "metropolis"){
-        x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
+        x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols, inertia)
       } else if (rule == "glauber"){
-        x = single_flip_glauber(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols)
+        x = single_flip_glauber(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols, inertia)
       } else {
         stop()
       }
@@ -135,45 +138,34 @@ spatial_ising_terra = function(x, B, J, updates = 1, iter, rule, progress = TRUE
   return(x)
 }
 
-energy_diff_glauber = function(focal, neigh, B, J) {
-    -1 * (-focal - focal) * (B + neigh * J)
+energy_diff2 = function(focal, neigh, B, J, inertia) {
+  en_diff = 2 * (B + neigh * J) * focal
+  # if ((fo == -1 && nb == -4) || (fo == 1 && nb == 4)){
+  if (focal == -1 && neigh == -4){
+    en_diff = en_diff + inertia
+  }
+  return(en_diff)
 }
-single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols) {
+
+single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, inertia) {
   # neighbor sum
   nb = input_matrix[(rx %% n_rows) + 1, ry] + input_matrix[((rx - 2) %% n_rows) + 1, ry] +
     input_matrix[rx, (ry %% n_cols) + 1] + input_matrix[rx, ((ry - 2) %% n_cols) + 1]
   fo = input_matrix[rx, ry]
-  en_diff = energy_diff_glauber(fo, nb, B, J)
-  # if ((fo == -1 && nb == -4) || (fo == 1 && nb == 4)){
-  if (fo == -1 && nb == -4){
-    # print(en_diff)
-    Q = 100
-    en_diff = en_diff + Q
-  }
-  P = 1 / (1 + exp(1)^en_diff)
-  # print(P)
-  if (rbinom(n = 1, size = 1, prob = P)){
+  en_diff = energy_diff2(fo, nb, B, J, inertia)
+  P = 1 / (1 + exp(en_diff))
+  if (P > rn){
     input_matrix[rx, ry] = -fo
   }
   return(input_matrix)
 }
 
-energy_diff_metropolis2 = function(focal, neigh, B, J) {
-    2 * (B + neigh * J) * focal
-}
-single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols) {
-  # choose random spin
-  # if (missing(rx)){
-  #   rx = round(stats::runif(1, min = 1, max = n_rows))
-  # }
-  # if (missing(ry)){
-  #   ry = round(stats::runif(1, min = 1, max = n_cols))
-  # }
+single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, inertia) {
   # neighbor sum
   nb = input_matrix[(rx %% n_rows) + 1, ry] + input_matrix[((rx - 2) %% n_rows) + 1, ry] +
     input_matrix[rx, (ry %% n_cols) + 1] + input_matrix[rx, ((ry - 2) %% n_cols) + 1]
   fo = input_matrix[rx, ry]
-  en_diff = energy_diff_metropolis2(fo, nb, B, J)
+  en_diff = energy_diff2(fo, nb, B, J, inertia)
   if (en_diff <= 0){ #<= or <?
     input_matrix[rx, ry] = -fo
   } else if (rn < exp(-en_diff)){
@@ -182,48 +174,49 @@ single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows, n_col
   return(input_matrix)
 }
 
-energy_diff_metropolis = function(focal, neigh, B, J){
-  if (focal == 1){
-    if (neigh == 4){
-      2 * (B + 4 * J)
-    } else if (neigh == 2){
-      2 * (B + 2 * J)
-    } else if (neigh == 0){
-      2 * (B + 0 * J)
-    } else if (neigh == -2){
-      2 * (B - 2 * J)
-    } else if (neigh == -4){
-      2 * (B - 4 * J)
-    }
-  } else if (focal == -1){
-    if (neigh == 4){
-      -2 * (B + 4 * J)
-    } else if (neigh == 2){
-      -2 * (B + 2 * J)
-    } else if (neigh == 0){
-      -2 * (B + 0 * J)
-    } else if (neigh == -2){
-      -2 * (B - 2 * J)
-    } else if (neigh == -4){
-      -2 * (B - 4 * J)
-    }
-  }
-}
-single_flip_metropolis = function(input_matrix, B, J) {
-  n_rows = nrow(input_matrix)
-  n_cols = ncol(input_matrix)
-  # choose random spin
-  x = round(stats::runif(1, min = 1, max = n_rows))
-  y = round(stats::runif(1, min = 1, max = n_cols))
-  # neighbor sum
-  nb = input_matrix[(x %% n_rows) + 1, y] + input_matrix[((x - 2) %% n_rows) + 1, y] +
-    input_matrix[x, (y %% n_cols) + 1] + input_matrix[x, ((y - 2) %% n_cols) + 1]
-  fo = input_matrix[x, y]
-  if (energy_diff_metropolis(fo, nb, B, J) <= 0){ #<= or <?
-    input_matrix[x, y] = -input_matrix[x, y]
-  } else if (stats::runif(1) < exp(-energy_diff_metropolis(fo, nb, B, J))){
-    input_matrix[x, y] = -input_matrix[x, y]
-  }
-  return(input_matrix)
-}
-# > bench::mark({is1 = spatial_ising(r1, B = -0.3, J = 0.7, updates = 250)})
+# slow, legacy code:
+# energy_diff_metropolis = function(focal, neigh, B, J){
+#   if (focal == 1){
+#     if (neigh == 4){
+#       2 * (B + 4 * J)
+#     } else if (neigh == 2){
+#       2 * (B + 2 * J)
+#     } else if (neigh == 0){
+#       2 * (B + 0 * J)
+#     } else if (neigh == -2){
+#       2 * (B - 2 * J)
+#     } else if (neigh == -4){
+#       2 * (B - 4 * J)
+#     }
+#   } else if (focal == -1){
+#     if (neigh == 4){
+#       -2 * (B + 4 * J)
+#     } else if (neigh == 2){
+#       -2 * (B + 2 * J)
+#     } else if (neigh == 0){
+#       -2 * (B + 0 * J)
+#     } else if (neigh == -2){
+#       -2 * (B - 2 * J)
+#     } else if (neigh == -4){
+#       -2 * (B - 4 * J)
+#     }
+#   }
+# }
+
+# single_flip_metropolis = function(input_matrix, B, J) {
+#   n_rows = nrow(input_matrix)
+#   n_cols = ncol(input_matrix)
+#   # choose random spin
+#   x = round(stats::runif(1, min = 1, max = n_rows))
+#   y = round(stats::runif(1, min = 1, max = n_cols))
+#   # neighbor sum
+#   nb = input_matrix[(x %% n_rows) + 1, y] + input_matrix[((x - 2) %% n_rows) + 1, y] +
+#     input_matrix[x, (y %% n_cols) + 1] + input_matrix[x, ((y - 2) %% n_cols) + 1]
+#   fo = input_matrix[x, y]
+#   if (energy_diff_metropolis(fo, nb, B, J) <= 0){ #<= or <?
+#     input_matrix[x, y] = -input_matrix[x, y]
+#   } else if (stats::runif(1) < exp(-energy_diff_metropolis(fo, nb, B, J))){
+#     input_matrix[x, y] = -input_matrix[x, y]
+#   }
+#   return(input_matrix)
+# }
