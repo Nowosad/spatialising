@@ -9,8 +9,8 @@
 #' The output of this function has as many layers as the `updates` value.
 #' @param iter Specifies how many iterations are performed on the input object.
 #' By default it equals to the number of values in the input object.
-#' @param rule description
-#' @param inertia description
+#' @param rule IM temporal evolution rule: either `"glauber"` (default) or `"metropolis"`
+#' @param inertia Represents the modification of the algorithm aimed at suppressing the salt-and-pepper noise of the focus category present when simulating evolution of a coarse-textured pattern. With Q > 0, small patches of the focus category are not generated, thus eliminating the salt-and-pepper noise of the focus category
 #' @param version By default, `1`, the `x` object is converted into a matrix
 #' (fast, but can be memory consuming); `version = 2` has a lower RAM impact, but
 #' is much slower
@@ -43,7 +43,7 @@
 #'
 #' # ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 9)
 #' # plot(ri3)
-spatial_ising = function(x, B, J, updates = 1, iter, rule = "metropolis",
+spatial_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
                          inertia = 0, version = 1, progress = TRUE){
   if (is.character(x)){
     is_char = TRUE
@@ -94,10 +94,10 @@ spatial_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia, progr
     rys = round(stats::runif(iter, min = 1, max = n_cols))
     runif_1 = stats::runif(iter)
     for (i in seq_len(iter)){
-      if (rule == "metropolis"){
-        x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols, inertia)
-      } else if (rule == "glauber"){
+      if (rule == "glauber"){
         x = single_flip_glauber(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols, inertia)
+      } else if (rule == "metropolis"){
+        x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols, inertia)
       } else {
         stop()
       }
@@ -126,10 +126,10 @@ spatial_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia, progre
     rys = round(stats::runif(iter, min = 1, max = n_cols))
     runif_1 = stats::runif(iter)
     for (i in seq_len(iter)){
-      if (rule == "metropolis"){
-        x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols, inertia)
-      } else if (rule == "glauber"){
+      if (rule == "glauber"){
         x = single_flip_glauber(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols, inertia)
+      } else if (rule == "metropolis"){
+        x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], runif_1[i], n_rows, n_cols, inertia)
       } else {
         stop()
       }
