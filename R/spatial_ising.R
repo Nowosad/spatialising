@@ -44,7 +44,7 @@
 #' # ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 9)
 #' # plot(ri3)
 spatial_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
-                         inertia = 0, version = 1, progress = TRUE){
+                         inertia = 0, version = 1, progress = FALSE){
   if (is.character(x)){
     is_char = TRUE
     x = terra::rast(x)

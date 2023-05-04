@@ -13,7 +13,7 @@ spatial_ising(
   rule = "glauber",
   inertia = 0,
   version = 1,
-  progress = TRUE
+  progress = FALSE
 )
 }
 \arguments{
