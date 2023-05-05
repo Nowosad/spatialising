@@ -186,12 +186,17 @@ energy_diff2 = function(focal, neigh, B, J, inertia) {
 
 single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, inertia) {
   # neighbor sum
-  nb = input_matrix[(rx %% n_rows) + 1, ry] + input_matrix[((rx - 2) %% n_rows) + 1, ry] +
-    input_matrix[rx, (ry %% n_cols) + 1] + input_matrix[rx, ((ry - 2) %% n_cols) + 1]
+  nb = input_matrix[(rx %% n_rows) + 1, ry] +
+    input_matrix[((rx - 2) %% n_rows) + 1, ry] +
+    input_matrix[rx, (ry %% n_cols) + 1] +
+    input_matrix[rx, ((ry - 2) %% n_cols) + 1]
   fo = input_matrix[rx, ry]
+  # print(fo)
   en_diff = energy_diff2(fo, nb, B, J, inertia)
   P = 1 / (1 + exp(en_diff))
+  # print(rn)
   if (P > rn){
+    # cat(paste(rx, ry, P, input_matrix[(rx %% n_rows) + 1, ry]), "\n")
     input_matrix[rx, ry] = -fo
   }
   return(input_matrix)

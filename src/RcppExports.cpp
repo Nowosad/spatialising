@@ -26,39 +26,39 @@ BEGIN_RCPP
 END_RCPP
 }
 // flip_glauber_rcpp
-NumericMatrix flip_glauber_rcpp(NumericMatrix input_matrix, double B, double J, IntegerVector rxs, IntegerVector rys, NumericVector rns, int n_rows, int n_cols, double inertia);
+NumericMatrix flip_glauber_rcpp(NumericMatrix& input_matrix, const double& B, const double& J, const IntegerVector& rxs, const IntegerVector& rys, const NumericVector& rns, const int& n_rows, const int& n_cols, const double& inertia);
 RcppExport SEXP _spatialising_flip_glauber_rcpp(SEXP input_matrixSEXP, SEXP BSEXP, SEXP JSEXP, SEXP rxsSEXP, SEXP rysSEXP, SEXP rnsSEXP, SEXP n_rowsSEXP, SEXP n_colsSEXP, SEXP inertiaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type input_matrix(input_matrixSEXP);
-    Rcpp::traits::input_parameter< double >::type B(BSEXP);
-    Rcpp::traits::input_parameter< double >::type J(JSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type rxs(rxsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type rys(rysSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type rns(rnsSEXP);
-    Rcpp::traits::input_parameter< int >::type n_rows(n_rowsSEXP);
-    Rcpp::traits::input_parameter< int >::type n_cols(n_colsSEXP);
-    Rcpp::traits::input_parameter< double >::type inertia(inertiaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix& >::type input_matrix(input_matrixSEXP);
+    Rcpp::traits::input_parameter< const double& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const double& >::type J(JSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type rxs(rxsSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type rys(rysSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type rns(rnsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type n_rows(n_rowsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type n_cols(n_colsSEXP);
+    Rcpp::traits::input_parameter< const double& >::type inertia(inertiaSEXP);
     rcpp_result_gen = Rcpp::wrap(flip_glauber_rcpp(input_matrix, B, J, rxs, rys, rns, n_rows, n_cols, inertia));
     return rcpp_result_gen;
 END_RCPP
 }
 // flip_metropolis2_rcpp
-NumericMatrix flip_metropolis2_rcpp(NumericMatrix input_matrix, double B, double J, IntegerVector rxs, IntegerVector rys, NumericVector rns, int n_rows, int n_cols, double inertia);
+NumericMatrix flip_metropolis2_rcpp(NumericMatrix& input_matrix, const double& B, const double& J, const IntegerVector& rxs, const IntegerVector& rys, const NumericVector& rns, const int& n_rows, const int& n_cols, const double& inertia);
 RcppExport SEXP _spatialising_flip_metropolis2_rcpp(SEXP input_matrixSEXP, SEXP BSEXP, SEXP JSEXP, SEXP rxsSEXP, SEXP rysSEXP, SEXP rnsSEXP, SEXP n_rowsSEXP, SEXP n_colsSEXP, SEXP inertiaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type input_matrix(input_matrixSEXP);
-    Rcpp::traits::input_parameter< double >::type B(BSEXP);
-    Rcpp::traits::input_parameter< double >::type J(JSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type rxs(rxsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type rys(rysSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type rns(rnsSEXP);
-    Rcpp::traits::input_parameter< int >::type n_rows(n_rowsSEXP);
-    Rcpp::traits::input_parameter< int >::type n_cols(n_colsSEXP);
-    Rcpp::traits::input_parameter< double >::type inertia(inertiaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix& >::type input_matrix(input_matrixSEXP);
+    Rcpp::traits::input_parameter< const double& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const double& >::type J(JSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type rxs(rxsSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type rys(rysSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type rns(rnsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type n_rows(n_rowsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type n_cols(n_colsSEXP);
+    Rcpp::traits::input_parameter< const double& >::type inertia(inertiaSEXP);
     rcpp_result_gen = Rcpp::wrap(flip_metropolis2_rcpp(input_matrix, B, J, rxs, rys, rns, n_rows, n_cols, inertia));
     return rcpp_result_gen;
 END_RCPP

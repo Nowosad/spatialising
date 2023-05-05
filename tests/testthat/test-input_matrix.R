@@ -12,3 +12,5 @@ test_that("calculations on matrices works", {
   expect_equal(ts1, r_end)
   expect_equal(ts1v2, r_end)
 })
+
+terra::plot(c(terra::rast(ts1), terra::rast(r_end), terra::rast(ts1v2)))

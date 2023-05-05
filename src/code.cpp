@@ -1,6 +1,11 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+int mod(int x, int y) {
+  int r = x % y;
+  return r < 0 ? r + y : r;
+}
+
 // [[Rcpp::export]]
 double energy_diff3(double focal, double neigh, double B, double J, double inertia) {
   double en_diff = 2 * (B + neigh * J) * focal;
@@ -13,18 +18,19 @@ double energy_diff3(double focal, double neigh, double B, double J, double inert
 }
 
 // [[Rcpp::export]]
-NumericMatrix flip_glauber_rcpp(NumericMatrix input_matrix, double B, double J, IntegerVector rxs, IntegerVector rys, NumericVector rns, int n_rows, int n_cols, double inertia) {
+NumericMatrix flip_glauber_rcpp(NumericMatrix& input_matrix, const double& B, const double& J, const IntegerVector& rxs, const IntegerVector& rys, const NumericVector& rns, const int& n_rows, const int& n_cols, const double& inertia) {
   int n = rns.size();
 
   for (int i = 0; i < n; i++) {
     int rx = rxs[i], ry = rys[i];
     double rn = rns[i];
 
-    double nb = input_matrix((rx % n_rows), ry - 1) + input_matrix(((rx - 2) % n_rows), ry - 1) +
-      input_matrix(rx - 1, (ry % n_cols)) + input_matrix(rx - 1, ((ry - 2) % n_cols));
+    double nb = input_matrix(mod(rx, n_rows), ry - 1) +
+      input_matrix(mod((rx - 2), n_rows), ry - 1) +
+      input_matrix(rx - 1, mod(ry, n_cols)) +
+      input_matrix(rx - 1, mod((ry - 2), n_cols));
 
     double fo = input_matrix(rx - 1, ry - 1);
-
     double en_diff = energy_diff3(fo, nb, B, J, inertia);
     double P = 1 / (1 + exp(en_diff));
 
@@ -37,18 +43,19 @@ NumericMatrix flip_glauber_rcpp(NumericMatrix input_matrix, double B, double J, 
 }
 
 // [[Rcpp::export]]
-NumericMatrix flip_metropolis2_rcpp(NumericMatrix input_matrix, double B, double J, IntegerVector rxs, IntegerVector rys, NumericVector rns, int n_rows, int n_cols, double inertia) {
+NumericMatrix flip_metropolis2_rcpp(NumericMatrix& input_matrix, const double& B, const double& J, const IntegerVector& rxs, const IntegerVector& rys, const NumericVector& rns, const int& n_rows, const int& n_cols, const double& inertia) {
   int n = rns.size();
 
   for (int i = 0; i < n; i++) {
     int rx = rxs[i], ry = rys[i];
     double rn = rns[i];
 
-    double nb = input_matrix((rx % n_rows), ry - 1) + input_matrix(((rx - 2) % n_rows), ry - 1) +
-      input_matrix(rx - 1, (ry % n_cols)) + input_matrix(rx - 1, ((ry - 2) % n_cols));
+    double nb = input_matrix(mod(rx, n_rows), ry - 1) +
+      input_matrix(mod((rx - 2), n_rows), ry - 1) +
+      input_matrix(rx - 1, mod(ry, n_cols)) +
+      input_matrix(rx - 1, mod((ry - 2), n_cols));
 
     double fo = input_matrix(rx - 1, ry - 1);
-
     double en_diff = energy_diff3(fo, nb, B, J, inertia);
 
     if (en_diff <= 0){
