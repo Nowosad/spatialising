@@ -7,8 +7,8 @@ Authors@R: c(
     email = "nowosad.jakub@gmail.com", 
     comment = c(ORCID = "0000-0002-1057-3721")))
 Description: Performs simulations of binary spatial raster data using
-    the Ising model (Ising (1925) <doi:10.1007%2FBF02980577>; 
-    Onsager (1944) <doi:10.1103%2FPhysRev.65.117>). It allows to set a few
+    the Ising model (Ising (1925) <doi:10.1007\%2FBF02980577>; 
+    Onsager (1944) <doi:10.1103\%2FPhysRev.65.117>). It allows to set a few
     parameters that represent internal and external pressures, and the number 
     of simulations.
 License: MIT + file LICENSE
@@ -17,6 +17,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports:
     comat,
+    Rcpp,
     terra
 URL: https://github.com/Nowosad/spatialising
 BugReports: https://github.com/Nowosad/spatialising/issues
@@ -27,3 +28,5 @@ Config/testthat/edition: 3
 Depends: 
     R (>= 2.10)
 LazyData: false
+LinkingTo: 
+    Rcpp
