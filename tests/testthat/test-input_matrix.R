@@ -37,3 +37,4 @@ test_that("calculations on matrices works", {
 #
 # bench::mark(a = {set.seed(2022-04-04); spatial_ising(r_start, B = -0.3, J = 0.7, rule = "metropolis")},
 #             b = {set.seed(2022-04-04); ts1v2 = spatial_ising(terra::rast(r_start), B = -0.3, J = 0.7, rule = "metropolis", version = 2); terra::as.matrix(ts1v2, wide = TRUE)})
+
