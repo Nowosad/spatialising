@@ -19,3 +19,4 @@ test_that("calculations of metrics works", {
   expect_equal(length(m3), 1)
   expect_true(ti3 == 1)
 })
+
