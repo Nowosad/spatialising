@@ -56,24 +56,27 @@ spatial_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
     if (is_output_not_matrix){
       x_ext = terra::ext(x)
       x_crs = terra::crs(x)
-      x = terra::as.matrix(x, wide = TRUE)
+      result = terra::as.matrix(x, wide = TRUE)
+    } else {
+      result = x
     }
-    x = spatial_ising_matrix(x = x, B = B, J = J, updates = updates,
+    result = spatial_ising_matrix(x = result, B = B, J = J, updates = updates,
                                iter = iter, rule = rule, inertia = inertia, progress = progress)
     if (is_output_not_matrix){
-      x = terra::rast(x, crs = x_crs, extent = x_ext)
-      names(x) = paste0("update", seq_len(updates))
+      result = terra::rast(result, crs = x_crs, extent = x_ext)
+      names(result) = paste0("update", seq_len(updates))
     }
 
   } else if (version == 2){
-    x = spatial_ising_terra(x = x, B = B, J = J, updates = updates,
+    result = x
+    result = spatial_ising_terra(x = result, B = B, J = J, updates = updates,
                                iter = iter, rule = rule, inertia = inertia, progress = progress)
-    names(x) = paste0("update", seq_len(updates))
+    names(result) = paste0("update", seq_len(updates))
   }
   # if (is_char){
-  #   x = wrap(x)
+  #   result = wrap(result)
   # }
-  return(x)
+  return(result)
 }
 
 spatial_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia, progress = TRUE){
@@ -191,12 +194,9 @@ single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, i
     input_matrix[rx, (ry %% n_cols) + 1] +
     input_matrix[rx, ((ry - 2) %% n_cols) + 1]
   fo = input_matrix[rx, ry]
-  # print(fo)
   en_diff = energy_diff2(fo, nb, B, J, inertia)
   P = 1 / (1 + exp(en_diff))
-  # print(rn)
   if (P > rn){
-    # cat(paste(rx, ry, P, input_matrix[(rx %% n_rows) + 1, ry]), "\n")
     input_matrix[rx, ry] = -fo
   }
   return(input_matrix)
@@ -204,8 +204,10 @@ single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, i
 
 single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, inertia) {
   # neighbor sum
-  nb = input_matrix[(rx %% n_rows) + 1, ry] + input_matrix[((rx - 2) %% n_rows) + 1, ry] +
-    input_matrix[rx, (ry %% n_cols) + 1] + input_matrix[rx, ((ry - 2) %% n_cols) + 1]
+  nb = input_matrix[(rx %% n_rows) + 1, ry] +
+    input_matrix[((rx - 2) %% n_rows) + 1, ry] +
+    input_matrix[rx, (ry %% n_cols) + 1] +
+    input_matrix[rx, ((ry - 2) %% n_cols) + 1]
   fo = input_matrix[rx, ry]
   en_diff = energy_diff2(fo, nb, B, J, inertia)
   if (en_diff <= 0){ #<= or <?
