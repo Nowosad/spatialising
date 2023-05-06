@@ -26,12 +26,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // flip_glauber_rcpp
-NumericMatrix flip_glauber_rcpp(NumericMatrix& input_matrix, const double& B, const double& J, const IntegerVector& rxs, const IntegerVector& rys, const NumericVector& rns, const int& n_rows, const int& n_cols, const double& inertia);
+NumericMatrix flip_glauber_rcpp(const NumericMatrix& input_matrix, const double& B, const double& J, const IntegerVector& rxs, const IntegerVector& rys, const NumericVector& rns, const int& n_rows, const int& n_cols, const double& inertia);
 RcppExport SEXP _spatialising_flip_glauber_rcpp(SEXP input_matrixSEXP, SEXP BSEXP, SEXP JSEXP, SEXP rxsSEXP, SEXP rysSEXP, SEXP rnsSEXP, SEXP n_rowsSEXP, SEXP n_colsSEXP, SEXP inertiaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix& >::type input_matrix(input_matrixSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type input_matrix(input_matrixSEXP);
     Rcpp::traits::input_parameter< const double& >::type B(BSEXP);
     Rcpp::traits::input_parameter< const double& >::type J(JSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type rxs(rxsSEXP);
@@ -45,12 +45,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // flip_metropolis2_rcpp
-NumericMatrix flip_metropolis2_rcpp(NumericMatrix& input_matrix, const double& B, const double& J, const IntegerVector& rxs, const IntegerVector& rys, const NumericVector& rns, const int& n_rows, const int& n_cols, const double& inertia);
+NumericMatrix flip_metropolis2_rcpp(const NumericMatrix& input_matrix, const double& B, const double& J, const IntegerVector& rxs, const IntegerVector& rys, const NumericVector& rns, const int& n_rows, const int& n_cols, const double& inertia);
 RcppExport SEXP _spatialising_flip_metropolis2_rcpp(SEXP input_matrixSEXP, SEXP BSEXP, SEXP JSEXP, SEXP rxsSEXP, SEXP rysSEXP, SEXP rnsSEXP, SEXP n_rowsSEXP, SEXP n_colsSEXP, SEXP inertiaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix& >::type input_matrix(input_matrixSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type input_matrix(input_matrixSEXP);
     Rcpp::traits::input_parameter< const double& >::type B(BSEXP);
     Rcpp::traits::input_parameter< const double& >::type J(JSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type rxs(rxsSEXP);
