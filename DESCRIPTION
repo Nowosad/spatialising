@@ -23,6 +23,8 @@ URL: https://github.com/Nowosad/spatialising
 BugReports: https://github.com/Nowosad/spatialising/issues
 Suggests: 
     covr,
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
@@ -30,3 +32,4 @@ Depends:
 LazyData: false
 LinkingTo: 
     Rcpp
+VignetteBuilder: knitr

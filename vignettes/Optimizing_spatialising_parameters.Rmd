@@ -1,0 +1,20 @@
+---
+title: "Optimizing spatialising parameters"
+author: Jakub Nowosad
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Optimizing_spatialising_parameters}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(spatialising)
+```
