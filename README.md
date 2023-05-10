@@ -12,12 +12,12 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![R-CMD-check](https://github.com/Nowosad/spatialising/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Nowosad/spatialising/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of spatialising is to perform simulations of binary spatial
+The goal of **spatialising** is to perform simulations of binary spatial
 raster data using the Ising model.
 
 ## Installation
 
-You can install the development version of spatialising from
+You can install the development version of **spatialising** from
 [GitHub](https://github.com/) with:
 
 ``` r
