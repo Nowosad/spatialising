@@ -1,6 +1,7 @@
 pandoc: 2.9.2.1
 pkgdown: 2.0.7
 pkgdown_sha: ~
-articles: {}
-last_built: 2023-05-10T13:21Z
+articles:
+  Optimizing_spatialising_parameters: Optimizing_spatialising_parameters.html
+last_built: 2023-05-10T13:23Z
 
