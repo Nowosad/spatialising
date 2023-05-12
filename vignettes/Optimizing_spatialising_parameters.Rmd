@@ -17,10 +17,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-<!--The `maine2013` raster is our reference raster and our goal will be to simulate the state of year 2016 using the **spatialising** package.
-The package implements the Ising model, which is a Markov random field model that can be used to simulate binary spatial raster data.-->
+The **spatialising** package allows to perform simulations of binary spatial raster data using the Ising model.
+This model requires two parameters: `B` and `J`.
+The goal of this document is to show how to optimize these parameters to obtain the best possible simulation.
 
-Let's start by attaching two packages: **terra** (for reading and processing raster data) and **spatialising** (for simulations of binary spatial raster data), and read two datasets: `maine2013` and `maine2016`.
+## Setup
+
+Let's start by attaching two packages: **terra** (for reading and processing raster data) and **spatialising**, and read two datasets: `maine2013` and `maine2016`.
 
 ```{r setup}
 #| message: false
@@ -30,17 +33,19 @@ maine2013 = rast(system.file("raster/maine2013.tif", package = "spatialising"))
 maine2016 = rast(system.file("raster/maine2016.tif", package = "spatialising"))
 ```
 
-These rasters represent the same forestered area in the state of Maine with 250 rows and columns.
-The `maine2013` raster represents the state in year 2013, while the `maine2016` in 2016. 
+These rasters represent the same forested area in the state of Maine with 250 rows and columns.
+The `maine2013` raster represents the state in the year 2013, while the `maine2016` in 2016. 
 Both of them have only two values: `1` for forest and `-1` for non-forest.
 
 ```{r}
 plot(c(maine2013, maine2016))
 ```
 
-A careful look at the plot above reveals that there was an increase in the forested area between 2013 and 2016.
+A careful look at the plot above reveals an increase in the forested area between 2013 and 2016.
 
-For each of our raster, we can calculate two metrics: magnetization and texture index.
+## Metrics
+
+For each of our rasters, we calculate two metrics: magnetization and texture index.
 The magnetization ($m$) is the sum of all raster values divided by the number of cells.
 It has a range from `-1` to `1`, where `-1` means that all cells have value `-1` and `1` means that all cells have value `1`.
 
@@ -48,44 +53,49 @@ It has a range from `-1` to `1`, where `-1` means that all cells have value `-1`
 magnetization(c(maine2013, maine2016))
 ```
 
-Here, we can see an increase in the values of magnetization between 2013 and 2016, which means that the forested area (`1)` increased.
+Here, we can see an increase in the values of magnetization between 2013 and 2016, which means that the forested area (`1`) had increased.
 
-The texture index ($t$) is an average over the entire site of the value of products the values of neighboring cells.
-It has a range from `0` to `1`, where 0 is a smooth, fine texture, and `1` is a coarse texture.
+The texture index ($t$) is an average over the entire site of the values of neighboring cells.
+It has a range from `0` to `1`, where `0` is a smooth, fine texture, and `1` is a coarse texture.
 
 ```{r}
 texture_index(c(maine2013, maine2016))
 ```
 
-The values of texture index also increased between the studied years, but to much lesser degree.
+The values of texture index also increased between the studied years, but to a much lesser degree.
 
-Now, we could try to simulate the state in year 2016 using the `maine2013` raster as a reference with the `spatial_ising()` function.
+## Simulations
+
+Now, we could try to simulate the state in the year 2016 using the `maine2013` raster as a reference with the `spatial_ising()` function.
 It requires the input raster (`x`), the strength of the external pressure (`B`), the strength of the peer pressure (`J`), and also has some optional arguments, such as the number of iterations (`iter`), and the inertia (`inertia`).
+
 `B`, in a nutshell, controls the probability of a cell to change its value, while `J` controls the probability of a cell to change its value to the value of its neighbors (spatial autocorrelation).
-For example, negative `B` results in a higher probability of a cell to change its value to `-1`, while positive `B` gives a higher probability of a cell to change its value to `1`.
-The negative `J` parameter results in a higher probability of a cell to change its valuethe opposite value of its neighbors, while positive `J` gives a higher probability of a cell to change its value to the value of its neighbors.
+For example, negative `B` results in a higher probability of a cell to change its value to `-1`, while positive `B` gives a higher probability of a cell changing its value to `1`.
+The negative `J` parameter results in a higher probability of a cell to change its value to the opposite value of its neighbors, while positive `J` gives a higher probability of a cell to change its value to the value of its neighbors.
 The `iter` argument controls the number of iterations (how many times the flip of a cell value is attempted). 
 By default, its value is set to the number of cells in the input raster, however, as in this case there were three years between the studied years, we can set it to three times the number of cells.
-The last parameter, `inertia` (by default `0`), when possitive makes it less possible for a cell of `-1` to change its value to `1` when surrounded by other `-1` cells.
+The last parameter, `inertia` (by default `0`), when positive makes it less possible for a cell of `-1` to change its value to `1` when surrounded by other `-1` cells.
 As the effect, it minimizes the possibility of a "salt and pepper" effect, where cells of different values are mixed together.
 
 In our example of reforestation, we could assume that the value of `B` should be positive, as the forested area increased between 2013 and 2016.
-We could also make an assumption that the value of `J` should be possitive, as many environmental spatial processes express some kind of spatial autocorrelation.
-At this point, however, the questions is what should be the values of `B` and `J`?
-We may start by trying different values of `B` and `J` to see which combination of them results in the best simulation and to gather some kind of intuition regarding the values.
+We could also make an assumption that the value of `J` should be positive, as many environmental spatial processes express some kind of spatial autocorrelation.
+At this point, however, the question is: what should be the values of `B` and `J`?
+We may start by trying different values of `B` and `J` to see which combination of them results in the best simulation and to gather some kind of intuition regarding these values.
 
 ```{r}
-sim1 = spatial_ising(maine2013, B = 0.3, J = 0.6, iter = ncell(maine2013) * 3, inertia = 150)
-sim2 = spatial_ising(maine2013, B = 0.7, J = 0.3, iter = ncell(maine2013) * 3, inertia = 150)
+sim1 = spatial_ising(maine2013, B = 0.3, J = 0.9, iter = ncell(maine2013) * 3, inertia = 150)
+sim2 = spatial_ising(maine2013, B = 0.7, J = 0.1, iter = ncell(maine2013) * 3, inertia = 150)
 ```
+
 The plot below shows our two simulations.
-<!--expand-->
+The left one represents a visible increase in the forested area, while keeping these areas spatially coherent.
+The right one, on the other hand, represents a larger, but also a more "chaotic" increase in the forested area.
 
 ```{r}
 plot(c(sim1, sim2))
 ```
 
-To make a decision of which simulation is better, we can calculate the metrics for each of them and compare them with the metrics of the `maine2016` raster.
+To make a numerical decision on which simulation is better, we can calculate the metrics for each of them and compare them with the metrics of the `maine2016` raster.
 
 ```{r}
 maine2016_metrics = c(magnetization(maine2016), texture_index(maine2016))
@@ -94,24 +104,24 @@ sim2_metrics = c(magnetization(sim2), texture_index(sim2))
 ```
 
 Here, we join all of the resulting metrics into a single matrix and calculate the Euclidean distance between the metrics of the `maine2016` raster and the metrics of each of the simulations using the `dist()` function.
-The smaller the distance, the simulation is more similar to the `maine2016` raster.
+The smaller the distance, the more simulation is similar to the `maine2016` raster.
 
 ```{r}
 all_metrics = rbind(maine2016_metrics, sim1_metrics, sim2_metrics)
 dist(all_metrics)
 ```
-<!--
-check
+
 The results show that the `sim1` simulation is more similar to the `maine2016` raster than the `sim2` simulation.
--->
+
+## Optimization
 
 We could now try many different combinations of `B` and `J` values and compare the results, but this would be a tedious task.
-Instead, we can use the **optimization** package to find the best combination of `B` and `J` values using a techiniqued called *simulated annealing*.
+Instead, we can use the **optimization** package to find the best combination of `B` and `J` values using a technique called *simulated annealing*.
 The main function in this package, `optim_sa()`, requires the input function (`fun`), the starting values (`start`), and the lower (`lower`) and upper (`upper`) bounds for the values.
 The `fun` function must take only one input and return a single value.
-The `optim_sa()` function will try to find the best combination of `B` and `J` values that minimize the output value of the `fun` function.
 
-In our case, we can use `optimize_model()` as the input function.
+In our case, the `optim_sa()` function will try to find the best combination of `B` and `J` values that minimize the output value of the `fun` function.
+We will use `optimize_model()` as the input function.
 It takes a vector `x` of two values (proposed `B` and `J`), runs the `spatial_ising()` function with these values, calculates the metrics for the resulting raster, and calculates the Euclidean distance between the metrics of the resulting raster and the metrics of the `maine2016` raster.
 
 ```{r}
@@ -135,10 +145,7 @@ optim_params = optim_sa(fun = optimize_model,
 ```
 
 The `optim_sa()` function returns an object that contains with the best combination of `B` and `J` values in the `par` element.
-<!-- 
-check
-In this case the best combination is `B = 0.3` and `J = 0.6`.
--->
+In this case, the best combination found is `B = 0.08` and `J = 0.47`.^[You just need to be aware that simulated annealing is a stochastic algorithm, so the results may be slightly different each time you run it.]
 
 ```{r}
 optim_params$par
@@ -153,13 +160,10 @@ sim_optim = spatial_ising(maine2016,
 plot(sim_optim)
 ```
 
-Finally, we can compare the rasters for years 2013, 2016, and the simulation for 2016.
+Finally, we can compare the rasters for the years 2013, 2016, and the simulation for 2016.
 
 ```{r}
 plot(c(maine2013, maine2016, sim_optim), nr = 1)
 ```
 
-<!--
-check and expand
-The results show that the `sim_optim` raster is more similar to the `maine2016` raster than the `maine2013` raster.
--->
+The results show that the `sim_optim` raster is fairly similar to the `maine2016`.
