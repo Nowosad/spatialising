@@ -3,18 +3,113 @@ title: "Optimizing spatialising parameters"
 author: Jakub Nowosad
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Optimizing_spatialising_parameters}
+  %\VignetteIndexEntry{Optimizing spatialising parameters}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
+set.seed(2023-05-10)
 knitr::opts_chunk$set(
   collapse = TRUE,
+  fig.width = 7,
   comment = "#>"
 )
 ```
 
+<!--The `maine2013` raster is our reference raster and our goal will be to simulate the state of year 2016 using the **spatialising** package.
+The package implements the Ising model, which is a Markov random field model that can be used to simulate binary spatial raster data.-->
+
+Let's start by attaching two packages: **terra** (for reading and processing raster data) and **spatialising** (for simulations of binary spatial raster data), and read two datasets: `maine2013` and `maine2016`.
+
 ```{r setup}
+#| message: false
+library(terra)
 library(spatialising)
+maine2013 = rast(system.file("raster/maine2013.tif", package = "spatialising"))
+maine2016 = rast(system.file("raster/maine2016.tif", package = "spatialising"))
+```
+
+These rasters represent the same forestered area in the state of Maine with 250 rows and columns.
+The `maine2013` raster represents the state in year 2013, while the `maine2016` in 2016. 
+Both of them have only two values: `1` for forest and `-1` for non-forest.
+
+```{r}
+plot(c(maine2013, maine2016))
+```
+
+A careful look at the plot above reveals that there was an increase in the forested area between 2013 and 2016.
+
+For each of our raster, we can calculate two metrics: magnetization and texture index.
+The magnetization ($m$) is the sum of all raster values divided by the number of cells.
+It has a range from `-1` to `1`, where `-1` means that all cells have value `-1` and `1` means that all cells have value `1`.
+
+```{r}
+magnetization(c(maine2013, maine2016))
+```
+
+Here, we can see an increase in the values of magnetization between 2013 and 2016, which means that the forested area (`1)` increased.
+
+The texture index ($t$) is an average over the entire site of the value of products the values of neighboring cells.
+It has a range from `0` to `1`, where 0 is a smooth, fine texture, and `1` is a coarse texture.
+
+```{r}
+texture_index(c(maine2013, maine2016))
+```
+
+The values of texture index also increased between the studied years, but to much lesser degree.
+
+Now, we could try to simulate the state in year 2016 using the `maine2013` raster as a reference with the `spatial_ising()` function.
+
+```{r}
+sim1 = spatial_ising(maine2013, B = 0.3, J = 0.6, iter = ncell(maine2013) * 3, inertia = 150)
+```
+
+```{r}
+sim2 = spatial_ising(maine2013, B = 0.7, J = 0.3, iter = ncell(maine2013) * 3, inertia = 150)
+```
+
+```{r}
+plot(c(sim1, sim2))
+```
+
+```{r}
+maine2016_metrics = c(magnetization(maine2016), texture_index(maine2016))
+sim1_metrics = c(magnetization(sim1), texture_index(sim1))
+sim2_metrics = c(magnetization(sim2), texture_index(sim2))
+all_metrics = rbind(maine2016_metrics, sim1_metrics, sim2_metrics)
+```
+
+```{r}
+dist(all_metrics)
+```
+
+```{r}
+optimize_model = function(x){
+  sim = spatialising::spatial_ising(x = maine2013, B = x[1], J = x[2], 
+                                    iter = ncell(maine2013) * 3, inertia = 150)  
+  maine2016_metrics = c(magnetization(maine2016), texture_index(maine2016))
+  sim_metrics = c(magnetization(sim), texture_index(sim))             
+  dist(rbind(maine2016_metrics, sim_metrics))
+}
+```
+
+
+```{r}
+#| message: false
+library(optimization)
+optim_params = optim_sa(fun = optimize_model, 
+                        start = c(0, 0), lower = c(-0.9, -0.9), upper = c(0.9, 0.9))
+optim_params$par
+```
+
+```{r}
+sim_optim = spatial_ising(maine2016, 
+                          B = optim_params$par[1], J = optim_params$par[2], 
+                          iter = ncell(maine2013) * 2, inertia = 150)
+plot(sim_optim)
+```
+
+```{r}
+plot(c(maine2013, maine2016, sim_optim), nr = 1)
 ```
