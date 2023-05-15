@@ -148,7 +148,7 @@ Here, we will set the starting values of `B` and `J` to `0`, the lower bound of 
 #| message: false
 library(optimization)
 optim_params = optim_sa(fun = optimize_model, 
-                        start = c(0, 0), lower = c(-0.9, 0), upper = c(0.9, 0.9),trace = TRUE)
+                        start = c(0, 0), lower = c(-0.9, 0), upper = c(0.9, 0.9))
 ```
 
 The `optim_sa()` function returns an object that contains the best combination of `B` and `J` values in the `par` element.
