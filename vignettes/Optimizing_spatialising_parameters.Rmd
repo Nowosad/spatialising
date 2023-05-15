@@ -44,10 +44,6 @@ A careful look at the plot above reveals an increase in the forested area betwee
 
 ## Metrics
 
-For each of our rasters, we calculate two metrics: magnetization and texture index.
-The magnetization ($m$) is the sum of all raster values divided by the number of cells.
-It has a range from `-1` to `1`, where `-1` means that all cells have value `-1` and `1` means that all cells have value `1`.
-
 For each of our rasters, we calculate two metrics: magnetization and texture index. 
 The magnetization ($m$) is the sum of all raster values divided by the number of cells.
 The name "magnetization" is historical as the Ising model was originally developed as a theoretical model of magnetized substances.
@@ -71,7 +67,7 @@ The values of texture index also increased between the studied years, but to a m
 ## Simulations
 
 Now, we could try to simulate the state in the year 2016 using the `maine2013` raster as a reference with the `spatial_ising()` function.
-It requires the input raster (`x`), the strength of the external pressure (`B`), the strength of the peer pressure (`J`), and also has some optional arguments, such as the number of iterations (`iter`), and the inertia (`inertia`).
+It requires the input raster (`x`), the strength of the external pressure (`B`), the strength of the local autocorrelation tendency (`J`), and also has some optional arguments, such as the number of iterations (`iter`), and the inertia (`inertia`).
 
 The simulation proceeds with one randomly selected cell at a time.
 The selected cell is given an opportunity to flip its value (`1` to `-1` or  `-1` to `1`).
@@ -111,7 +107,7 @@ sim2_metrics = c(magnetization(sim2), texture_index(sim2))
 ```
 
 The two metrics for a given pattern can be viewed as a metric point (*metric1*, *metric2*).
-Then, a the Euclidean "distance" between two patterns in terms of these two metrics is *[(metricA1-metricB1)^2 +{metricB1-metricB2)^2]^(1/2)*.
+Then, a the Euclidean "distance" between two patterns in terms of these two metrics is *[(metricA1-metricB1)^2 +{metricA2-metricB2)^2]^(1/2)*.
 We can now calculate distance (dissimilarity) between the `maine2016` pattern (a target of the simulation) and two simulated candidate patterns (see below).
 
 Here, we join all of the resulting metrics into a single matrix and calculate the Euclidean distance between the metrics of the `maine2016` raster and the metrics of each of the simulations using the `dist()` function.
