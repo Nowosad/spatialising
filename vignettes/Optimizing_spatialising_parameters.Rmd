@@ -44,16 +44,15 @@ A careful look at the plot above reveals an increase in the forested area betwee
 
 ## Metrics
 
-For each of our rasters, we calculate two metrics: magnetization and texture index. 
-The magnetization ($m$) is the sum of all raster values divided by the number of cells.
-The name "magnetization" is historical as the Ising model was originally developed as a theoretical model of magnetized substances.
+For each of our rasters, we calculate two metrics: m index and texture index. 
+The m_index ($m$) is the sum of all raster values divided by the number of cells.
 It has a range from `-1` to `1`, where `-1` means that all cells have value `-1` and `1` means that all cells have value `1`.
 
 ```{r}
-magnetization(c(maine2013, maine2016))
+m_index(c(maine2013, maine2016))
 ```
 
-Here, we can see an increase in the values of magnetization between 2013 and 2016, which means that the forested area (`1`) had increased.
+Here, we can see an increase in the values of the m index between 2013 and 2016, which means that the forested area (`1`) had increased.
 
 The texture index ($t$) is an average over the entire site of the values of neighboring cells.
 It has a range from `0` to `1`, where `0` is a smooth, fine texture, and `1` is a coarse texture.
@@ -74,7 +73,7 @@ The selected cell is given an opportunity to flip its value (`1` to `-1` or  `-1
 The probability of a flip depends on the value of the cell and the values of its four neighbors (top, left, bottom, and right).
 It also depends on the values of `B` and `J`.
 `B` (positive or negative) is an external pressure: it tries to align cells' values with its sign.
-`J` (always positive) is an interaction between neighboring cells: it tries to align signs of neighboring cells.  
+`J` (always positive) is a strength of the local autocorrelation tendency: it tries to align signs of neighboring cells.  
 The `iter` argument controls the number of iterations (how many times the flip of a cell value is attempted). 
 By default, its value is set to the number of cells in the input raster, however, as in this case there were three years between the studied years, we can set it to three times the number of cells.
 The last parameter, `inertia` (by default `0`), when positive makes it less possible for a cell of `-1` to change its value to `1` when surrounded by other `-1` cells.
@@ -101,9 +100,9 @@ plot(c(sim1, sim2))
 To make a numerical decision on which simulation is better, we can calculate the metrics for each of them and compare them with the metrics of the `maine2016` raster.
 
 ```{r}
-maine2016_metrics = c(magnetization(maine2016), texture_index(maine2016))
-sim1_metrics = c(magnetization(sim1), texture_index(sim1))
-sim2_metrics = c(magnetization(sim2), texture_index(sim2))
+maine2016_metrics = c(m_index(maine2016), texture_index(maine2016))
+sim1_metrics = c(m_index(sim1), texture_index(sim1))
+sim2_metrics = c(m_index(sim2), texture_index(sim2))
 ```
 
 The two metrics for a given pattern can be viewed as a metric point (*metric1*, *metric2*).
@@ -135,8 +134,8 @@ It takes a vector `x` of two values (proposed `B` and `J`), runs the `spatial_is
 optimize_model = function(x){
   sim = spatialising::spatial_ising(x = maine2013, B = x[1], J = x[2], 
                                     iter = ncell(maine2013) * 3, inertia = 150)  
-  maine2016_metrics = c(magnetization(maine2016), texture_index(maine2016))
-  sim_metrics = c(magnetization(sim), texture_index(sim))             
+  maine2016_metrics = c(m_index(maine2016), texture_index(maine2016))
+  sim_metrics = c(m_index(sim), texture_index(sim))             
   dist(rbind(maine2016_metrics, sim_metrics))[[1]]
 }
 ```
@@ -158,7 +157,6 @@ In this case, the best combination found is `B = 0.09` and `J = 0.43`.^[You just
 optim_params$par
 ```
 
-
 Now, we are able to run the `spatial_ising()` function with the best combination of `B` and `J` values.
 
 ```{r}
@@ -171,7 +169,7 @@ plot(sim_optim)
 We can also check the `function_value` element that represents the Euclidean distance between the metrics of the `maine2016` raster and the metrics of the raster generated with the best combination of `B` and `J` values.
 
 ```{r}
-sim_optim_metrics = c(magnetization(sim_optim), texture_index(sim_optim))             
+sim_optim_metrics = c(m_index(sim_optim), texture_index(sim_optim))             
 dist(rbind(maine2016_metrics, sim_optim_metrics))[[1]]
 ```
 

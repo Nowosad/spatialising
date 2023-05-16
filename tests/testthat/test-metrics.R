@@ -5,9 +5,9 @@ ts1 = spatial_ising(r_start, B = -0.3, J = 0.7)
 ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, updates = 10)
 ts_oneclass = matrix(rep(1, 9), nrow = 3)
 
-m1 = magnetization(ts1)
-m2 = magnetization(ts10)
-m3 = magnetization(ts_oneclass)
+m1 = m_index(ts1)
+m2 = m_index(ts10)
+m3 = m_index(ts_oneclass)
 
 ti1 = texture_index(ts1)
 ti2 = texture_index(ts10)

@@ -50,7 +50,7 @@ plot(r1)
 
 Most of the raster area is covered with the value of `1`, and just about 5% of the area is covered with the value of `-1`.
 The main function in this package is `spatial_ising()`.
-It accepts the input raster and at least two additional parameters: `B` -- representing external pressure and `J` -- representing peer pressure.
+It accepts the input raster and at least two additional parameters: `B` -- representing external pressure and `J` -- representing the strength of the local autocorrelation tendency.
 The output is a raster modified based on the provided parameters.
 
 ```{r, fig.height=3}

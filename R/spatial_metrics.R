@@ -1,6 +1,6 @@
-#' Magnetization
+#' M index
 #'
-#' Calculates magnetization (m) -- a sum of cell’s values
+#' Calculates m index -- a sum of cell’s values
 #' over the entire site divided by the number of cell in the site.
 #' m has a range from -1 (site completely dominated by the -1 values) to
 #' 1 (site completely dominated by the 1 values).
@@ -12,18 +12,18 @@
 #'
 #' @examples
 #' data(r_start, package = "spatialising")
-#' magnetization(r_start)
+#' m_index(r_start)
 #' ts1 = spatial_ising(r_start, B = -0.3, J = 0.7)
-#' magnetization(ts1)
+#' m_index(ts1)
 #' ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, updates = 2)
-#' magnetization(ts10)
+#' m_index(ts10)
 #'
 #' # library(terra)
 #' # r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
-#' # magnetization(r1)
+#' # m_index(r1)
 #' # r2 = spatial_ising(r1, B = -0.3, J = 0.7)
-#' # magnetization(r2)
-magnetization = function(x){
+#' # m_index(r2)
+m_index = function(x){
   if (inherits(x, "matrix")){
     sum(x) / length(x)
   } else if (inherits(x, "array")) {
@@ -34,10 +34,9 @@ magnetization = function(x){
 }
 #' Texture index
 #'
-#' Calculates texture index -- an average over the entire site of the value of
-#' products the values of neighboring cells.
+#' Calculates texture index -- an average (over an array) of a product of the values of neighboring cells.
 #' The value of texture index is between 0 (fine texture), and 1 (coarse texture).
-#'
+#' 
 #' @param x SpatRaster or matrix containing two values: -1 and 1
 #' @param ... Arguments for [comat::get_coma()]
 #'

@@ -19,9 +19,9 @@ spatial_ising(
 \arguments{
 \item{x}{SpatRaster or matrix containing two values: -1 and 1}
 
-\item{B}{External pressure}
+\item{B}{External pressure (positive or negative): it tries to align cells' values with its sign}
 
-\item{J}{Peer pressure - it regulates a degree of local harmonization}
+\item{J}{Strength of the local autocorrelation tendency (always positive): it tries to align signs of neighboring cells}
 
 \item{updates}{Specifies how many sets of iterations are performed on the input object.
 The output of this function has as many layers as the \code{updates} value.}

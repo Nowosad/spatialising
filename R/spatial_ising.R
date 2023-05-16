@@ -3,8 +3,8 @@
 #' Performs simulations based on the given parameters of the Ising model
 #'
 #' @param x SpatRaster or matrix containing two values: -1 and 1
-#' @param B External pressure
-#' @param J Peer pressure - it regulates a degree of local harmonization
+#' @param B External pressure (positive or negative): it tries to align cells' values with its sign
+#' @param J Strength of the local autocorrelation tendency (always positive): it tries to align signs of neighboring cells
 #' @param updates Specifies how many sets of iterations are performed on the input object.
 #' The output of this function has as many layers as the `updates` value.
 #' @param iter Specifies how many iterations are performed on the input object.

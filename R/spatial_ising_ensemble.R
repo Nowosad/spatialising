@@ -46,7 +46,7 @@ spatial_ising_ensemble = function(runs, ...){
 spatial_ising_exemplar = function(runs, ...){
   l = spatial_ising_ensemble(runs = runs, ...)
   nlayers = ifelse(is.na(dim(l[[1]])[3]), 1, dim(l[[1]])[3])
-  lc = vapply(l, magnetization, numeric(nlayers))
+  lc = vapply(l, m_index, numeric(nlayers))
   la = vapply(l, texture_index, numeric(nlayers))
   if(inherits(lc, "matrix")){ #updates >1
     lc = t(lc)
