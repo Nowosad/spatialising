@@ -40,7 +40,7 @@ Both of them have only two values: `1` for forest and `-1` for non-forest.
 plot(c(maine2013, maine2016))
 ```
 
-A careful look at the plot above reveals an increase in the forested area between 2013 and 2016.
+A careful look at the west part of the plot above reveals an increase in the forested area between 2013 and 2016.
 
 ## Metrics
 
