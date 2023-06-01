@@ -18,7 +18,7 @@ NULL
 #' An example matrix object
 #'
 #' A matrix has 50 columns and 50 rows. The matrix contains two values: -1 and 1.
-#' This object was created with `r_end = spatial_ising(r_start, B = -0.3, J = 0.7)`
+#' This object was created with `r_end = kinetic_ising(r_start, B = -0.3, J = 0.7)`
 #'
 #' @format A matrix
 #' @usage data(r_end)

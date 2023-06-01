@@ -16,7 +16,7 @@ usethis::use_data(r_start, overwrite = TRUE)
 
 set.seed(2022-04-04)
 devtools::load_all()
-r_end = spatial_ising(r_start, B = -0.3, J = 0.7)
+r_end = kinetic_ising(r_start, B = -0.3, J = 0.7)
 usethis::use_data(r_end, overwrite = TRUE)
 
 

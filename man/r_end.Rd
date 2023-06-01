@@ -12,6 +12,6 @@ data(r_end)
 }
 \description{
 A matrix has 50 columns and 50 rows. The matrix contains two values: -1 and 1.
-This object was created with \code{r_end = spatial_ising(r_start, B = -0.3, J = 0.7)}
+This object was created with \code{r_end = kinetic_ising(r_start, B = -0.3, J = 0.7)}
 }
 \keyword{datasets}

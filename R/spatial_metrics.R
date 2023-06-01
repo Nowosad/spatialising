@@ -13,15 +13,15 @@
 #' @examples
 #' data(r_start, package = "spatialising")
 #' m_index(r_start)
-#' ts1 = spatial_ising(r_start, B = -0.3, J = 0.7)
+#' ts1 = kinetic_ising(r_start, B = -0.3, J = 0.7)
 #' m_index(ts1)
-#' ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, updates = 2)
+#' ts10 = kinetic_ising(r_start, B = -0.3, J = 0.7, updates = 2)
 #' m_index(ts10)
 #'
 #' # library(terra)
 #' # r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
 #' # m_index(r1)
-#' # r2 = spatial_ising(r1, B = -0.3, J = 0.7)
+#' # r2 = kinetic_ising(r1, B = -0.3, J = 0.7)
 #' # m_index(r2)
 m_index = function(x){
   if (inherits(x, "matrix")){
@@ -46,15 +46,15 @@ m_index = function(x){
 #' @examples
 #' data(r_start, package = "spatialising")
 #' texture_index(r_start)
-#' ts1 = spatial_ising(r_start, B = -0.3, J = 0.7)
+#' ts1 = kinetic_ising(r_start, B = -0.3, J = 0.7)
 #' texture_index(ts1)
-#' ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, updates = 10)
+#' ts10 = kinetic_ising(r_start, B = -0.3, J = 0.7, updates = 10)
 #' texture_index(ts10)
 #'
 #' library(terra)
 #' r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
 #' texture_index(r1)
-#' r2 = spatial_ising(r1, B = -0.3, J = 0.7)
+#' r2 = kinetic_ising(r1, B = -0.3, J = 0.7)
 #' texture_index(r2)
 texture_index = function(x, ...){
   if (inherits(x, "matrix")){

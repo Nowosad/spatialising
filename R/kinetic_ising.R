@@ -28,24 +28,24 @@
 #'
 #' @examples
 #' data(r_start, package = "spatialising")
-#' ts1 = spatial_ising(r_start, B = -0.3, J = 0.7)
-#' ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, updates = 10)
+#' ts1 = kinetic_ising(r_start, B = -0.3, J = 0.7)
+#' ts10 = kinetic_ising(r_start, B = -0.3, J = 0.7, updates = 10)
 #'
 #' library(terra)
 #' r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
 #' plot(r1)
-#' r2 = spatial_ising(r1, B = -0.3, J = 0.7)
+#' r2 = kinetic_ising(r1, B = -0.3, J = 0.7)
 #' plot(r2)
 #'
-#' # ri1 = spatial_ising(r1, B = -0.3, J = 0.7, updates = 9)
+#' # ri1 = kinetic_ising(r1, B = -0.3, J = 0.7, updates = 9)
 #' # plot(ri1)
 #'
-#' # ri2 = spatial_ising(r1, B = 0.3, J = 0.7, updates = 9)
+#' # ri2 = kinetic_ising(r1, B = 0.3, J = 0.7, updates = 9)
 #' # plot(ri2)
 #'
-#' # ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 9)
+#' # ri3 = kinetic_ising(r1, B = -0.3, J = 0.4, updates = 9)
 #' # plot(ri3)
-spatial_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
+kinetic_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
                          inertia = 0, version = 1, progress = FALSE){
   if (is.character(x)){
     is_char = TRUE
@@ -60,7 +60,7 @@ spatial_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
     } else {
       result = x
     }
-    result = spatial_ising_matrix(x = result, B = B, J = J, updates = updates,
+    result = kinetic_ising_matrix(x = result, B = B, J = J, updates = updates,
                                iter = iter, rule = rule, inertia = inertia, progress = progress)
     if (is_output_not_matrix){
       result = terra::rast(result, crs = x_crs, extent = x_ext)
@@ -69,7 +69,7 @@ spatial_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
 
   } else if (version == 2){
     result = x
-    result = spatial_ising_terra(x = result, B = B, J = J, updates = updates,
+    result = kinetic_ising_terra(x = result, B = B, J = J, updates = updates,
                                iter = iter, rule = rule, inertia = inertia, progress = progress)
     names(result) = paste0("update", seq_len(updates))
   }
@@ -79,13 +79,13 @@ spatial_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
   return(result)
 }
 
-spatial_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia, progress = TRUE){
+kinetic_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia, progress = TRUE){
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
     if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
     for (i in seq_len(updates + 1)[-1]){
-      y[[i]] = spatial_ising_matrix(y[[i - 1]], B, J, updates = 1, iter, rule, inertia, progress = FALSE)
+      y[[i]] = kinetic_ising_matrix(y[[i - 1]], B, J, updates = 1, iter, rule, inertia, progress = FALSE)
       if (progress) utils::setTxtProgressBar(pb, i)
     }
     if (progress) close(pb)
@@ -146,13 +146,13 @@ spatial_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia, progr
 #   return(input_matrix)
 # }
 
-spatial_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia, progress = TRUE){
+kinetic_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia, progress = TRUE){
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
     if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
     for (i in seq_len(updates + 1)[-1]){
-      y[[i]] = spatial_ising_terra(y[[i - 1]], B, J, updates = 1, iter, rule, inertia, progress = FALSE)
+      y[[i]] = kinetic_ising_terra(y[[i - 1]], B, J, updates = 1, iter, rule, inertia, progress = FALSE)
       if (progress) utils::setTxtProgressBar(pb, i)
     }
     if (progress) close(pb)

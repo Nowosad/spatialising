@@ -42,26 +42,26 @@ plot(r1)
 
 Most of the raster area is covered with the value of `1`, and just about
 5% of the area is covered with the value of `-1`. The main function in
-this package is `spatial_ising()`. It accepts the input raster and at
+this package is `kinetic_ising()`. It accepts the input raster and at
 least two additional parameters: `B` – representing external pressure
 and `J` – representing peer pressure. The output is a raster modified
 based on the provided parameters.
 
 ``` r
-r2 = spatial_ising(r1, B = -0.3, J = 0.7)
+r2 = kinetic_ising(r1, B = -0.3, J = 0.7)
 plot(r2)
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
-The `spatial_ising()` function also has a fourth argument called
+The `kinetic_ising()` function also has a fourth argument called
 `updates`. By default, it equals to `1`, returning just one raster as
 the output. However, when given a value larger than one, it returns many
 rasters. Each new raster is the next iteration of the Ising model of the
 previous one.
 
 ``` r
-ri1 = spatial_ising(r1, B = -0.3, J = 0.7, updates = 3)
+ri1 = kinetic_ising(r1, B = -0.3, J = 0.7, updates = 3)
 plot(ri1, nr = 1)
 ```
 
@@ -75,7 +75,7 @@ On the other hand, values of `B = 0.3` and `J = 0.7` give a somewhat
 opposite result with less cell with the yellow category:
 
 ``` r
-ri2 = spatial_ising(r1, B = 0.3, J = 0.7, updates = 3)
+ri2 = kinetic_ising(r1, B = 0.3, J = 0.7, updates = 3)
 plot(ri2, nr = 1)
 ```
 
@@ -86,7 +86,7 @@ Note that the result shows much more prominent data change, with a
 predominance of the yellow category only after a few updates.
 
 ``` r
-ri3 = spatial_ising(r1, B = -0.3, J = 0.4, updates = 3)
+ri3 = kinetic_ising(r1, B = -0.3, J = 0.4, updates = 3)
 plot(ri3, nr = 1)
 ```
 

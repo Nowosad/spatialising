@@ -65,7 +65,7 @@ The values of texture index also increased between the studied years, but to a m
 
 ## Simulations
 
-Now, we could try to simulate the state in the year 2016 using the `maine2013` raster as a reference with the `spatial_ising()` function.
+Now, we could try to simulate the state in the year 2016 using the `maine2013` raster as a reference with the `kinetic_ising()` function.
 It requires the input raster (`x`), the strength of the external pressure (`B`), the strength of the local autocorrelation tendency (`J`), and also has some optional arguments, such as the number of iterations (`iter`), and the inertia (`inertia`).
 
 The simulation proceeds with one randomly selected cell at a time.
@@ -85,8 +85,8 @@ At this point, however, the question is: what should be the values of `B` and `J
 We may start by trying different values of `B` and `J` to see which combination of them results in the best simulation and to gather some kind of intuition regarding these values.
 
 ```{r}
-sim1 = spatial_ising(maine2013, B = 0.3, J = 0.9, iter = ncell(maine2013) * 3, inertia = 150)
-sim2 = spatial_ising(maine2013, B = 0.7, J = 0.1, iter = ncell(maine2013) * 3, inertia = 150)
+sim1 = kinetic_ising(maine2013, B = 0.3, J = 0.9, iter = ncell(maine2013) * 3, inertia = 150)
+sim2 = kinetic_ising(maine2013, B = 0.7, J = 0.1, iter = ncell(maine2013) * 3, inertia = 150)
 ```
 
 The plot below shows our two simulations.
@@ -128,11 +128,11 @@ The `fun` function must take only one input and return a single value.
 
 In our case, the `optim_sa()` function will try to find the best combination of `B` and `J` values that minimize the output value of the `fun` function.
 We will use `optimize_model()` as the input function.
-It takes a vector `x` of two values (proposed `B` and `J`), runs the `spatial_ising()` function with these values, calculates the metrics for the resulting raster, and calculates the Euclidean distance between the metrics of the resulting raster and the metrics of the `maine2016` raster.
+It takes a vector `x` of two values (proposed `B` and `J`), runs the `kinetic_ising()` function with these values, calculates the metrics for the resulting raster, and calculates the Euclidean distance between the metrics of the resulting raster and the metrics of the `maine2016` raster.
 
 ```{r}
 optimize_model = function(x){
-  sim = spatialising::spatial_ising(x = maine2013, B = x[1], J = x[2], 
+  sim = spatialising::kinetic_ising(x = maine2013, B = x[1], J = x[2], 
                                     iter = ncell(maine2013) * 3, inertia = 150)  
   maine2016_metrics = c(m_index(maine2016), texture_index(maine2016))
   sim_metrics = c(m_index(sim), texture_index(sim))             
@@ -157,10 +157,10 @@ In this case, the best combination found is `B = 0.09` and `J = 0.43`.^[You just
 optim_params$par
 ```
 
-Now, we are able to run the `spatial_ising()` function with the best combination of `B` and `J` values.
+Now, we are able to run the `kinetic_ising()` function with the best combination of `B` and `J` values.
 
 ```{r}
-sim_optim = spatial_ising(maine2016, 
+sim_optim = kinetic_ising(maine2016, 
                           B = optim_params$par[1], J = optim_params$par[2], 
                           iter = ncell(maine2013) * 3, inertia = 150)
 plot(sim_optim)

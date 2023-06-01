@@ -1,8 +1,8 @@
 set.seed(2022-04-04)
 data(r_start, package = "spatialising")
 data(r_end, package = "spatialising")
-ts1 = spatial_ising(r_start, B = -0.3, J = 0.7)
-ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, updates = 10)
+ts1 = kinetic_ising(r_start, B = -0.3, J = 0.7)
+ts10 = kinetic_ising(r_start, B = -0.3, J = 0.7, updates = 10)
 ts_oneclass = matrix(rep(1, 9), nrow = 3)
 
 m1 = m_index(ts1)

@@ -2,7 +2,7 @@
 set.seed(2022-04-04)
 data(r_start, package = "spatialising")
 data(r_end, package = "spatialising")
-ts1 = spatial_ising(r_start, B = -0.3, J = 0.7, rule = "metropolis")
+ts1 = kinetic_ising(r_start, B = -0.3, J = 0.7, rule = "metropolis")
 
 # r_start2 = r_start
 # data(r_start, package = "spatialising")
@@ -10,14 +10,14 @@ ts1 = spatial_ising(r_start, B = -0.3, J = 0.7, rule = "metropolis")
 
 set.seed(2022-04-04)
 # data(r_start, package = "spatialising")
-ts1v2 = spatial_ising(terra::rast(r_start), B = -0.3, J = 0.7, rule = "metropolis", version = 2)
+ts1v2 = kinetic_ising(terra::rast(r_start), B = -0.3, J = 0.7, rule = "metropolis", version = 2)
 ts1v2 = terra::as.matrix(ts1v2, wide = TRUE)
 
 # r_start2 = r_start
 # data(r_start, package = "spatialising")
 # terra::plot(c(terra::rast(r_start2), terra::rast(r_start)))
 
-ts10 = spatial_ising(r_start, B = -0.3, J = 0.7, updates = 10)
+ts10 = kinetic_ising(r_start, B = -0.3, J = 0.7, updates = 10)
 
 # terra::plot(terra::rast(ts1))
 
@@ -35,6 +35,6 @@ test_that("calculations on matrices works", {
 # all.equal(rns1, as.matrix(rns2, wide = T))
 # terra::plot(c(terra::rast(rns1), rns2))
 #
-# bench::mark(a = {set.seed(2022-04-04); spatial_ising(r_start, B = -0.3, J = 0.7, rule = "metropolis")},
-#             b = {set.seed(2022-04-04); ts1v2 = spatial_ising(terra::rast(r_start), B = -0.3, J = 0.7, rule = "metropolis", version = 2); terra::as.matrix(ts1v2, wide = TRUE)})
+# bench::mark(a = {set.seed(2022-04-04); kinetic_ising(r_start, B = -0.3, J = 0.7, rule = "metropolis")},
+#             b = {set.seed(2022-04-04); ts1v2 = kinetic_ising(terra::rast(r_start), B = -0.3, J = 0.7, rule = "metropolis", version = 2); terra::as.matrix(ts1v2, wide = TRUE)})
 
