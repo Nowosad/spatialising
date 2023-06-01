@@ -25,6 +25,15 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
+    <loc>/reference/kinetic_ising.html</loc>
+  </url>
+  <url>
+    <loc>/reference/kinetic_ising_ensemble.html</loc>
+  </url>
+  <url>
+    <loc>/reference/kinetic_ising_exemplar.html</loc>
+  </url>
+  <url>
     <loc>/reference/m_index.html</loc>
   </url>
   <url>
@@ -35,15 +44,6 @@
   </url>
   <url>
     <loc>/reference/r_start.tif.html</loc>
-  </url>
-  <url>
-    <loc>/reference/spatial_ising.html</loc>
-  </url>
-  <url>
-    <loc>/reference/spatial_ising_ensemble.html</loc>
-  </url>
-  <url>
-    <loc>/reference/spatial_ising_exemplar.html</loc>
   </url>
   <url>
     <loc>/reference/spatialising-package.html</loc>
