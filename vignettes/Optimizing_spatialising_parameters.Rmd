@@ -45,11 +45,11 @@ A careful look at the west part of the plot above reveals an increase in the for
 ## Metrics
 
 For each of our rasters, we calculate two metrics: m index and texture index. 
-The m_index ($m$) is the sum of all raster values divided by the number of cells.
+The composition_index ($m$) is the sum of all raster values divided by the number of cells.
 It has a range from `-1` to `1`, where `-1` means that all cells have value `-1` and `1` means that all cells have value `1`.
 
 ```{r}
-m_index(c(maine2013, maine2016))
+composition_index(c(maine2013, maine2016))
 ```
 
 Here, we can see an increase in the values of the m index between 2013 and 2016, which means that the forested area (`1`) had increased.
@@ -100,9 +100,9 @@ plot(c(sim1, sim2))
 To make a numerical decision on which simulation is better, we can calculate the metrics for each of them and compare them with the metrics of the `maine2016` raster.
 
 ```{r}
-maine2016_metrics = c(m_index(maine2016), texture_index(maine2016))
-sim1_metrics = c(m_index(sim1), texture_index(sim1))
-sim2_metrics = c(m_index(sim2), texture_index(sim2))
+maine2016_metrics = c(composition_index(maine2016), texture_index(maine2016))
+sim1_metrics = c(composition_index(sim1), texture_index(sim1))
+sim2_metrics = c(composition_index(sim2), texture_index(sim2))
 ```
 
 The two metrics for a given pattern can be viewed as a metric point (*metric1*, *metric2*).
@@ -134,8 +134,8 @@ It takes a vector `x` of two values (proposed `B` and `J`), runs the `kinetic_is
 optimize_model = function(x){
   sim = spatialising::kinetic_ising(x = maine2013, B = x[1], J = x[2], 
                                     iter = ncell(maine2013) * 3, inertia = 150)  
-  maine2016_metrics = c(m_index(maine2016), texture_index(maine2016))
-  sim_metrics = c(m_index(sim), texture_index(sim))             
+  maine2016_metrics = c(composition_index(maine2016), texture_index(maine2016))
+  sim_metrics = c(composition_index(sim), texture_index(sim))             
   dist(rbind(maine2016_metrics, sim_metrics))[[1]]
 }
 ```
@@ -169,7 +169,7 @@ plot(sim_optim)
 We can also check the `function_value` element that represents the Euclidean distance between the metrics of the `maine2016` raster and the metrics of the raster generated with the best combination of `B` and `J` values.
 
 ```{r}
-sim_optim_metrics = c(m_index(sim_optim), texture_index(sim_optim))             
+sim_optim_metrics = c(composition_index(sim_optim), texture_index(sim_optim))             
 dist(rbind(maine2016_metrics, sim_optim_metrics))[[1]]
 ```
 
