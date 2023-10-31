@@ -44,8 +44,9 @@ Most of the raster area is covered with the value of `1`, and just about
 5% of the area is covered with the value of `-1`. The main function in
 this package is `kinetic_ising()`. It accepts the input raster and at
 least two additional parameters: `B` – representing external pressure
-and `J` – representing peer pressure. The output is a raster modified
-based on the provided parameters.
+and `J` – representing the strength of the local autocorrelation
+tendency. The output is a raster modified based on the provided
+parameters.
 
 ``` r
 r2 = kinetic_ising(r1, B = -0.3, J = 0.7)
@@ -91,6 +92,14 @@ plot(ri3, nr = 1)
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+
+## Documentation
+
+Read the related article:
+
+1.  Stepinski, T. F. & Nowosad, J. (2023). The kinetic Ising model
+    encapsulates essential dynamics of land pattern change, Royal
+    Society Open Science, <https://doi.org/10.1098/rsos.231005>
 
 ## Contribution
 

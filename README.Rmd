@@ -86,6 +86,12 @@ ri3 = kinetic_ising(r1, B = -0.3, J = 0.4, updates = 3)
 plot(ri3, nr = 1)
 ```
 
+## Documentation
+
+Read the related article:
+
+1. Stepinski, T. F. & Nowosad, J. (2023). The kinetic Ising model encapsulates essential dynamics of land pattern change, Royal Society Open Science, https://doi.org/10.1098/rsos.231005
+
 ## Contribution
 
 Contributions to this package are welcome - let us know if you have any suggestions or spotted a bug. 

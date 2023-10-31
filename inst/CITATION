@@ -1,0 +1,12 @@
+citHeader("To cite spatialising in publications, please use:")
+
+bibentry(bibtype = "Article",
+  author = c(person("Tomasz", "Stepinski"), person("Jakub", "Nowosad")),
+  title = "The kinetic Ising model encapsulates essential dynamics of land pattern change",
+  journal = "Royal Society Open Science",
+  volume = "10",
+  year  = "2023",
+  doi = "10.1098/rsos.231005",
+  #url = "https://doi.org/10.1098/rsos.231005",
+  textVersion = "Stepinski, T. F. & Nowosad, J. (2023). The kinetic Ising model encapsulates essential dynamics of land pattern change, Royal Society Open Science, 10, 231005."
+)
