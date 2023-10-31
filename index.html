@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">spatialising</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -101,7 +101,7 @@
 <span><span class="va">r1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"raster/r_start.tif"</span>, package <span class="op">=</span> <span class="st">"spatialising"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">r1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
-<p>Most of the raster area is covered with the value of <code>1</code>, and just about 5% of the area is covered with the value of <code>-1</code>. The main function in this package is <code><a href="reference/kinetic_ising.html">kinetic_ising()</a></code>. It accepts the input raster and at least two additional parameters: <code>B</code> – representing external pressure and <code>J</code> – representing peer pressure. The output is a raster modified based on the provided parameters.</p>
+<p>Most of the raster area is covered with the value of <code>1</code>, and just about 5% of the area is covered with the value of <code>-1</code>. The main function in this package is <code><a href="reference/kinetic_ising.html">kinetic_ising()</a></code>. It accepts the input raster and at least two additional parameters: <code>B</code> – representing external pressure and <code>J</code> – representing the strength of the local autocorrelation tendency. The output is a raster modified based on the provided parameters.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">r2</span> <span class="op">=</span> <span class="fu"><a href="reference/kinetic_ising.html">kinetic_ising</a></span><span class="op">(</span><span class="va">r1</span>, B <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span>, J <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">r2</span><span class="op">)</span></span></code></pre></div>
@@ -122,6 +122,13 @@
 <code class="sourceCode R"><span><span class="va">ri3</span> <span class="op">=</span> <span class="fu"><a href="reference/kinetic_ising.html">kinetic_ising</a></span><span class="op">(</span><span class="va">r1</span>, B <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span>, J <span class="op">=</span> <span class="fl">0.4</span>, updates <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ri3</span>, nr <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-7-1.png" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
+</h2>
+<p>Read the related article:</p>
+<ol style="list-style-type: decimal"><li>Stepinski, T. F. &amp; Nowosad, J. (2023). The kinetic Ising model encapsulates essential dynamics of land pattern change, Royal Society Open Science, <a href="https://doi.org/10.1098/rsos.231005" class="external-link uri">https://doi.org/10.1098/rsos.231005</a>
+</li></ol>
 </div>
 <div class="section level2">
 <h2 id="contribution">Contribution<a class="anchor" aria-label="anchor" href="#contribution"></a>
