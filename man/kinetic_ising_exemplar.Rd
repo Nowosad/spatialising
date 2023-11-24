@@ -29,3 +29,6 @@ l = kinetic_ising_exemplar(100, r_start, B = -0.3, J = 0.7)
 # r2 = kinetic_ising_exemplar(100, r1, B = -0.3, J = 0.7)
 # plot(r2)
 }
+\seealso{
+\code{\link[=kinetic_ising]{kinetic_ising()}}, \code{\link[=kinetic_ising_ensemble]{kinetic_ising_ensemble()}}
+}

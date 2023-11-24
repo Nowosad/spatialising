@@ -6,7 +6,7 @@
 \alias{spatialising-package}
 \title{spatialising: Ising Model for Spatial Data}
 \description{
-Performs simulations of binary spatial raster data using the Ising model (Ising (1925) \doi{10.1007\\\%2FBF02980577}; Onsager (1944) \doi{10.1103\\\%2FPhysRev.65.117}). It allows to set a few parameters that represent internal and external pressures, and the number of simulations.
+Performs simulations of binary spatial raster data using the Ising model (Ising (1925) \doi{10.1007\\\%2FBF02980577}; Onsager (1944) \doi{10.1103\\\%2FPhysRev.65.117}). It allows to set a few parameters that represent internal and external pressures, and the number of simulations (Stepinski and Nowosad (2023) \doi{10.1098/rsos.231005}).
 }
 \seealso{
 Useful links:

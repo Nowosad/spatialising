@@ -31,12 +31,12 @@
 #' ts1 = kinetic_ising(r_start, B = -0.3, J = 0.7)
 #' ts10 = kinetic_ising(r_start, B = -0.3, J = 0.7, updates = 10)
 #'
-#' library(terra)
-#' r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
-#' plot(r1)
-#' r2 = kinetic_ising(r1, B = -0.3, J = 0.7)
-#' plot(r2)
+#' # r1 = terra::rast(system.file("raster/r_start.tif", package = "spatialising"))
+#' # terra::plot(r1)
+#' # r2 = kinetic_ising(r1, B = -0.3, J = 0.7)
+#' # terra::plot(r2)
 #'
+#' # library(terra)
 #' # ri1 = kinetic_ising(r1, B = -0.3, J = 0.7, updates = 9)
 #' # plot(ri1)
 #'
@@ -51,6 +51,7 @@ kinetic_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
     is_char = TRUE
     x = terra::rast(x)
   }
+  check_if_proper_binary(x)
   if (version == 1){
     is_output_not_matrix = !inherits(x, "matrix")
     if (is_output_not_matrix){
@@ -264,3 +265,20 @@ single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows, n_col
 #   }
 #   return(input_matrix)
 # }
+
+check_if_proper_binary = function(x){
+    if (inherits(x, "matrix")){
+        sample_size = c(length(x), 10000)
+        s = sample(x, size = sample_size[which.min(c(length(x), 10000))])
+    } else {
+        x_ncell = terra::ncell(x)
+        sample_size = c(x_ncell, 10000)
+        s_id = sample(seq_len(x_ncell), size = sample_size[which.min(c(x_ncell, 10000))])
+        s = terra::extract(x, s_id)[[1]]
+    }
+    unique_s = unique(s)
+    if (!all(unique_s %in% c(-1, 1))){
+        stop("The input raster can only contain values of -1 and 1", call. = FALSE)
+    }
+}
+

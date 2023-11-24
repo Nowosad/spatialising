@@ -23,12 +23,15 @@ data(r_start, package = "spatialising")
 composition_index(r_start)
 ts1 = kinetic_ising(r_start, B = -0.3, J = 0.7)
 composition_index(ts1)
-ts10 = kinetic_ising(r_start, B = -0.3, J = 0.7, updates = 2)
-composition_index(ts10)
+ts2 = kinetic_ising(r_start, B = -0.3, J = 0.7, updates = 2)
+composition_index(ts2)
 
 # library(terra)
 # r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
 # composition_index(r1)
 # r2 = kinetic_ising(r1, B = -0.3, J = 0.7)
 # composition_index(r2)
+}
+\seealso{
+\code{\link[=kinetic_ising]{kinetic_ising()}}
 }

@@ -6,6 +6,7 @@
 #' @param ... Arguments for [kinetic_ising()]
 #'
 #' @return A list of objects of the same class as `x`
+#' @seealso [spatialising::kinetic_ising()], [spatialising::kinetic_ising_exemplar()]
 #' @export
 #'
 #' @examples
@@ -32,6 +33,7 @@ kinetic_ising_ensemble = function(runs, ...){
 #' @param ... Arguments for [kinetic_ising()]
 #'
 #' @return Object of the same class as `x`
+#' @seealso [spatialising::kinetic_ising()], [spatialising::kinetic_ising_ensemble()]
 #' @export
 #'
 #' @examples
