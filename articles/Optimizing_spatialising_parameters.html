@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">spatialising</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0</span>
       </span>
     </div>
 
@@ -141,8 +141,8 @@ The <code>iter</code> argument controls the number of iterations (how many times
 <code class="sourceCode R"><span><span class="va">all_metrics</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">maine2016_metrics</span>, <span class="va">sim1_metrics</span>, <span class="va">sim2_metrics</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">dist</a></span><span class="op">(</span><span class="va">all_metrics</span><span class="op">)</span></span>
 <span><span class="co">#&gt;              maine2016_metrics sim1_metrics</span></span>
-<span><span class="co">#&gt; sim1_metrics         0.1270981             </span></span>
-<span><span class="co">#&gt; sim2_metrics         0.4161313    0.4219773</span></span></code></pre></div>
+<span><span class="co">#&gt; sim1_metrics         0.1330533             </span></span>
+<span><span class="co">#&gt; sim2_metrics         0.4179182    0.4207408</span></span></code></pre></div>
 <p>Clearly the simulated candidate pattern generated with <code>B = 0.3</code> and <code>J = 0.9</code> is a better match to the target.</p>
 </div>
 <div class="section level2">
@@ -166,7 +166,7 @@ The <code>iter</code> argument controls the number of iterations (how many times
 <p>The <code><a href="https://rdrr.io/pkg/optimization/man/optim_sa.html" class="external-link">optim_sa()</a></code> function returns an object that contains the best combination of <code>B</code> and <code>J</code> values in the <code>par</code> element. In this case, the best combination found is <code>B = 0.09</code> and <code>J = 0.43</code>.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">optim_params</span><span class="op">$</span><span class="va">par</span></span>
-<span><span class="co">#&gt; [1] 0.09 0.43</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.09 0.44</span></span></code></pre></div>
 <p>Now, we are able to run the <code><a href="../reference/kinetic_ising.html">kinetic_ising()</a></code> function with the best combination of <code>B</code> and <code>J</code> values.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_optim</span> <span class="op">=</span> <span class="fu"><a href="../reference/kinetic_ising.html">kinetic_ising</a></span><span class="op">(</span><span class="va">maine2016</span>, </span>
@@ -178,7 +178,7 @@ The <code>iter</code> argument controls the number of iterations (how many times
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_optim_metrics</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="../reference/composition_index.html">composition_index</a></span><span class="op">(</span><span class="va">sim_optim</span><span class="op">)</span>, <span class="fu"><a href="../reference/texture_index.html">texture_index</a></span><span class="op">(</span><span class="va">sim_optim</span><span class="op">)</span><span class="op">)</span>             </span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">maine2016_metrics</span>, <span class="va">sim_optim_metrics</span><span class="op">)</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; [1] 0.02497509</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.03608596</span></span></code></pre></div>
 <p>Finally, we can visually compare the rasters for the years 2013, 2016, and the simulation for 2016.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">maine2013</span>, <span class="va">maine2016</span>, <span class="va">sim_optim</span><span class="op">)</span>, nr <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
