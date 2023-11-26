@@ -50,20 +50,22 @@ data(r_start, package = "spatialising")
 ts1 = kinetic_ising(r_start, B = -0.3, J = 0.7)
 ts10 = kinetic_ising(r_start, B = -0.3, J = 0.7, updates = 10)
 
-# r1 = terra::rast(system.file("raster/r_start.tif", package = "spatialising"))
-# terra::plot(r1)
-# r2 = kinetic_ising(r1, B = -0.3, J = 0.7)
-# terra::plot(r2)
+\donttest{
+  r1 = terra::rast(system.file("raster/r_start.tif", package = "spatialising"))
+  terra::plot(r1)
+  r2 = kinetic_ising(r1, B = -0.3, J = 0.7)
+  terra::plot(r2)
 
-# library(terra)
-# ri1 = kinetic_ising(r1, B = -0.3, J = 0.7, updates = 9)
-# plot(ri1)
+  library(terra)
+  ri1 = kinetic_ising(r1, B = -0.3, J = 0.7, updates = 9)
+  plot(ri1)
 
-# ri2 = kinetic_ising(r1, B = 0.3, J = 0.7, updates = 9)
-# plot(ri2)
+  ri2 = kinetic_ising(r1, B = 0.3, J = 0.7, updates = 9)
+  plot(ri2)
 
-# ri3 = kinetic_ising(r1, B = -0.3, J = 0.4, updates = 9)
-# plot(ri3)
+  ri3 = kinetic_ising(r1, B = -0.3, J = 0.4, updates = 9)
+  plot(ri3)
+}
 }
 \references{
 Ising, E., 1924. Beitrag zur theorie des ferro-und paramagnetismus. Ph.D. thesis, Grefe & Tiedemann.

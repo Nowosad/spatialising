@@ -21,10 +21,12 @@ Creates an ensemble of simulations based on the given parameters of the Ising mo
 data(r_start, package = "spatialising")
 l = kinetic_ising_ensemble(100, r_start, B = -0.3, J = 0.7)
 
-# library(terra)
-# r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
-# plot(r1)
-# r2 = kinetic_ising_ensemble(100, r1, B = -0.3, J = 0.7)
+\donttest{
+  library(terra)
+  r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
+  plot(r1)
+  r2 = kinetic_ising_ensemble(100, r1, B = -0.3, J = 0.7)
+}
 }
 \seealso{
 \code{\link[=kinetic_ising]{kinetic_ising()}}, \code{\link[=kinetic_ising_exemplar]{kinetic_ising_exemplar()}}
