@@ -19,7 +19,7 @@ Imports:
     comat,
     Rcpp,
     terra
-URL: https://github.com/Nowosad/spatialising
+URL: https://jakubnowosad.com/spatialising/
 BugReports: https://github.com/Nowosad/spatialising/issues
 Suggests: 
     covr,

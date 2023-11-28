@@ -11,7 +11,7 @@ Performs simulations of binary spatial raster data using the Ising model (Ising 
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/Nowosad/spatialising}
+  \item \url{https://jakubnowosad.com/spatialising/}
   \item Report bugs at \url{https://github.com/Nowosad/spatialising/issues}
 }
 
