@@ -279,7 +279,7 @@ check_if_proper_binary = function(x){
         s = terra::extract(x, s_id)[[1]]
     }
     unique_s = unique(s)
-    if (!all(unique_s %in% c(-1, 1))){
+    if (!all(unique_s %in% c(-1, 1) | is.na(unique_s))){
         stop("The input raster can only contain values of -1 and 1", call. = FALSE)
     }
 }
