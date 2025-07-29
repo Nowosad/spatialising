@@ -19,6 +19,12 @@ raster data using the Ising model.
 
 ## Installation
 
+You can install the released version of **spatialising** from CRAN with:
+
+``` r
+install.packages("spatialising")
+```
+
 You can install the development version of **spatialising** from
 [GitHub](https://github.com/) with:
 
