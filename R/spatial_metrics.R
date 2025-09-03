@@ -32,7 +32,7 @@ composition_index = function(x){
   } else if (inherits(x, "array")) {
     apply(x, 3, sum) / apply(x, 3, length)
   } else {
-    terra::global(x, "sum")$sum / terra::ncell(x)
+    terra::global(x, "sum", na.rm = TRUE)$sum / global(x, "notNA", na.rm = FALSE)$notNA
   }
 }
 #' Texture index
