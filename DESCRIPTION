@@ -14,7 +14,7 @@ Description: Performs simulations of binary spatial raster data using
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports:
     comat,
     Rcpp,
@@ -29,7 +29,7 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
-    R (>= 2.10)
+    R (>= 4.1.0)
 LazyData: false
 LinkingTo: 
     Rcpp
