@@ -106,7 +106,7 @@ sim2_metrics = c(composition_index(sim2), texture_index(sim2))
 ```
 
 The two metrics for a given pattern can be viewed as a metric point (*metric1*, *metric2*).
-Then, a the Euclidean "distance" between two patterns in terms of these two metrics is *[(metricA1-metricB1)^2 +{metricA2-metricB2)^2]^(1/2)*.
+The Euclidean distance between two patterns in terms of these metrics is $\sqrt{(metricA1 - metricB1)^2 + (metricA2 - metricB2)^2}$.
 We can now calculate distance (dissimilarity) between the `maine2016` pattern (a target of the simulation) and two simulated candidate patterns (see below).
 
 Here, we join all of the resulting metrics into a single matrix and calculate the Euclidean distance between the metrics of the `maine2016` raster and the metrics of each of the simulations using the `dist()` function.
@@ -151,7 +151,7 @@ optim_params = optim_sa(fun = optimize_model,
 ```
 
 The `optim_sa()` function returns an object that contains the best combination of `B` and `J` values in the `par` element.
-In this case, the best combination found is `B = 0.09` and `J = 0.43`.^[You just need to be aware that simulated annealing is a stochastic algorithm, so the results may be slightly different each time you run it.]
+The exact values can vary because both the optimization and the kinetic Ising simulation are stochastic.
 
 ```{r}
 optim_params$par
@@ -160,16 +160,23 @@ optim_params$par
 Now, we are able to run the `kinetic_ising()` function with the best combination of `B` and `J` values.
 
 ```{r}
-sim_optim = kinetic_ising(maine2016, 
-                          B = optim_params$par[1], J = optim_params$par[2], 
+sim_optim = kinetic_ising(maine2013,
+                          B = optim_params$par[1], J = optim_params$par[2],
                           iter = ncell(maine2013) * 3, inertia = 150)
 plot(sim_optim)
 ```
 
-We can also check the `function_value` element that represents the Euclidean distance between the metrics of the `maine2016` raster and the metrics of the raster generated with the best combination of `B` and `J` values.
+The `function_value` element gives the smallest distance found during the optimization.
 
 ```{r}
-sim_optim_metrics = c(composition_index(sim_optim), texture_index(sim_optim))             
+optim_params$function_value
+```
+
+We can also calculate the distance between the observed 2016 pattern and this particular simulation.
+It may differ from `function_value` because `sim_optim` is a new stochastic realization.
+
+```{r}
+sim_optim_metrics = c(composition_index(sim_optim), texture_index(sim_optim))
 dist(rbind(maine2016_metrics, sim_optim_metrics))[[1]]
 ```
 
@@ -179,4 +186,4 @@ Finally, we can visually compare the rasters for the years 2013, 2016, and the s
 plot(c(maine2013, maine2016, sim_optim), nr = 1)
 ```
 
-The results show that the `sim_optim` raster is fairly similar to the `maine2016`.
+The results show that this simulation is fairly similar to the `maine2016` raster.

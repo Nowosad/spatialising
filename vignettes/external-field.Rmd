@@ -60,8 +60,9 @@ plot(c(maine2013, p, maine2016), nr = 1)
 
 The `external_field` argument of `kinetic_ising()` allows to use a spatially varying external pressure.
 Its values are in the same units as `B`, so we need to convert the probabilities in `p` to the pressure scale.
-To do that, we use the log-odds transformation.
-We set `B = 0`, so the effective external pressure is just the log-odds of the probability of class `1`:
+The map `p` gives the probability that each cell belongs to class `1`.
+To convert these probabilities to the model's pressure scale, we take their log-odds and divide by two.
+Because `B = 0` in this example, the converted values can be used directly as `external_field`:
 
 ```{r}
 B = 0
