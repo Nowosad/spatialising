@@ -14,16 +14,23 @@ test_that("a constant external field is added to B", {
 })
 
 test_that("both versions use the same spatial field", {
-  x = terra::rast(matrix(rep(c(-1, 1), 8), nrow = 4))
-  field = terra::rast(matrix(seq(-0.4, 0.4, length.out = 16), nrow = 4))
+  field_matrix = matrix(c(-20, 20, -20, 20,
+                           20, 20, -20, -20,
+                          -20, -20, 20, 20),
+                        nrow = 3, byrow = TRUE)
+  x = terra::rast(matrix(-1, nrow = 3, ncol = 4))
+  field = terra::rast(field_matrix)
+  expected = terra::values(terra::rast(ifelse(field_matrix > 0, 1, -1)))
 
   set.seed(2)
-  v1 = kinetic_ising(x, B = -0.3, J = 0.7, external_field = field)
+  v1 = kinetic_ising(x, B = 0, J = 0, iter = 200,
+                     external_field = field)
   set.seed(2)
-  v2 = kinetic_ising(x, B = -0.3, J = 0.7, version = 2,
+  v2 = kinetic_ising(x, B = 0, J = 0, iter = 200, version = 2,
                      external_field = field)
 
   expect_equal(terra::values(v1), terra::values(v2))
+  expect_equal(unname(terra::values(v1)), unname(expected))
 })
 
 test_that("external field dimensions must match x", {
