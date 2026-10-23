@@ -146,8 +146,8 @@ kinetic_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia,
     if (missing(iter)){
       iter = n_rows * n_cols
     }
-    rxs = round(stats::runif(iter, min = 1, max = n_rows))
-    rys = round(stats::runif(iter, min = 1, max = n_cols))
+    rxs = sample.int(n_rows, iter, replace = TRUE)
+    rys = sample.int(n_cols, iter, replace = TRUE)
     rns = stats::runif(iter)
     if (rule == "glauber"){
       x = flip_glauber_rcpp(x, B, J, rxs, rys, rns, n_rows, n_cols, inertia,
@@ -218,8 +218,8 @@ kinetic_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia,
     if (missing(iter)){
       iter = n_rows * n_cols
     }
-    rxs = round(stats::runif(iter, min = 1, max = n_rows))
-    rys = round(stats::runif(iter, min = 1, max = n_cols))
+    rxs = sample.int(n_rows, iter, replace = TRUE)
+    rys = sample.int(n_cols, iter, replace = TRUE)
     rns = stats::runif(iter)
     for (i in seq_len(iter)){
       if (rule == "glauber"){
