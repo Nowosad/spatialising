@@ -179,43 +179,6 @@ kinetic_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia,
   return(x)
 }
 
-
-# rcpp is used instead here
-# flip_glauber = function(input_matrix, B, J, rxs, rys, rns, n_rows, n_cols, inertia) {
-#   for (i in seq_along(rns)){
-#     rx = rxs[i]; ry = rys[i]; rn = rns[i]
-#     # neighbor sum
-#     nb = input_matrix[(rx %% n_rows) + 1, ry] + input_matrix[((rx - 2) %% n_rows) + 1, ry] +
-#       input_matrix[rx, (ry %% n_cols) + 1] + input_matrix[rx, ((ry - 2) %% n_cols) + 1]
-#     fo = input_matrix[rx, ry]
-#     en_diff = energy_diff2(fo, nb, B, J, inertia)
-#     P = 1 / (1 + exp(en_diff))
-#     if (P > rn){
-#       input_matrix[rx, ry] = -fo
-#     }
-#   }
-#   return(input_matrix)
-# }
-#
-
-# rcpp is used instead here
-# flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, inertia) {
-#   for (i in seq_along(rns)){
-#     rx = rxs[i]; ry = rys[i]; rn = rns[i]
-#     # neighbor sum
-#     nb = input_matrix[(rx %% n_rows) + 1, ry] + input_matrix[((rx - 2) %% n_rows) + 1, ry] +
-#       input_matrix[rx, (ry %% n_cols) + 1] + input_matrix[rx, ((ry - 2) %% n_cols) + 1]
-#     fo = input_matrix[rx, ry]
-#     en_diff = energy_diff2(fo, nb, B, J, inertia)
-#     if (en_diff <= 0){ #<= or <?
-#       input_matrix[rx, ry] = -fo
-#     } else if (rn < exp(-en_diff)){
-#       input_matrix[rx, ry] = -fo
-#     }
-#   }
-#   return(input_matrix)
-# }
-
 kinetic_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia,
                                progress = TRUE, external_field = NULL){
   if (updates > 1){
@@ -255,7 +218,6 @@ kinetic_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia,
 
 energy_diff2 = function(focal, neigh, B, J, inertia) {
   en_diff = 2 * (B + neigh * J) * focal
-  # if ((fo == -1 && nb == -4) || (fo == 1 && nb == 4)){
   if (focal == -1 && neigh == -4){
     en_diff = en_diff + inertia
   }
@@ -292,60 +254,13 @@ single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows,
   nb = sum(values[-1], na.rm = TRUE)
   if (!is.null(external_field)) B = B + external_field[rx, ry][[1]]
   en_diff = energy_diff2(fo, nb, B, J, inertia)
-  if (en_diff <= 0){ #<= or <?
+  if (en_diff <= 0){
     input_matrix[rx, ry] = -fo
   } else if (rn < exp(-en_diff)){
     input_matrix[rx, ry] = -fo
   }
   return(input_matrix)
 }
-
-# slow, legacy code:
-# energy_diff_metropolis = function(focal, neigh, B, J){
-#   if (focal == 1){
-#     if (neigh == 4){
-#       2 * (B + 4 * J)
-#     } else if (neigh == 2){
-#       2 * (B + 2 * J)
-#     } else if (neigh == 0){
-#       2 * (B + 0 * J)
-#     } else if (neigh == -2){
-#       2 * (B - 2 * J)
-#     } else if (neigh == -4){
-#       2 * (B - 4 * J)
-#     }
-#   } else if (focal == -1){
-#     if (neigh == 4){
-#       -2 * (B + 4 * J)
-#     } else if (neigh == 2){
-#       -2 * (B + 2 * J)
-#     } else if (neigh == 0){
-#       -2 * (B + 0 * J)
-#     } else if (neigh == -2){
-#       -2 * (B - 2 * J)
-#     } else if (neigh == -4){
-#       -2 * (B - 4 * J)
-#     }
-#   }
-# }
-
-# single_flip_metropolis = function(input_matrix, B, J) {
-#   n_rows = nrow(input_matrix)
-#   n_cols = ncol(input_matrix)
-#   # choose random spin
-#   x = round(stats::runif(1, min = 1, max = n_rows))
-#   y = round(stats::runif(1, min = 1, max = n_cols))
-#   # neighbor sum
-#   nb = input_matrix[(x %% n_rows) + 1, y] + input_matrix[((x - 2) %% n_rows) + 1, y] +
-#     input_matrix[x, (y %% n_cols) + 1] + input_matrix[x, ((y - 2) %% n_cols) + 1]
-#   fo = input_matrix[x, y]
-#   if (energy_diff_metropolis(fo, nb, B, J) <= 0){ #<= or <?
-#     input_matrix[x, y] = -input_matrix[x, y]
-#   } else if (stats::runif(1) < exp(-energy_diff_metropolis(fo, nb, B, J))){
-#     input_matrix[x, y] = -input_matrix[x, y]
-#   }
-#   return(input_matrix)
-# }
 
 check_if_proper_binary = function(x){
   n = if (inherits(x, "matrix")) length(x) else terra::ncell(x)
