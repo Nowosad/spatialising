@@ -2,7 +2,8 @@
 #'
 #' Performs simulations based on the given parameters of the Ising model
 #'
-#' @param x SpatRaster or matrix containing two values: -1 and 1
+#' @param x SpatRaster or matrix containing two values: -1 and 1. `NA` cells are
+#' excluded from the simulation.
 #' @param B External pressure (positive or negative): it tries to align cells' values with its sign
 #' @param J Strength of the local autocorrelation tendency (always positive): it tries to align signs of neighboring cells
 #' @param updates Specifies how many sets of iterations are performed on the input object.
@@ -19,7 +20,8 @@
 #' Values are on the same pressure scale as `B`: positive values favor `1`,
 #' negative values favor `-1`, and zero has no effect. The field
 #' must be a matrix with the same dimensions as a matrix `x`, or a single-layer
-#' `SpatRaster` with the same geometry as a raster `x`.
+#' `SpatRaster` with the same geometry as a raster `x`. Values may be `NA` only
+#' where `x` is `NA`.
 #'
 #' @references Ising, E., 1924. Beitrag zur theorie des ferro-und paramagnetismus. Ph.D. thesis, Grefe & Tiedemann.
 #' @references Onsager, L., 1944. Crystal statistics. I. A two-dimensional model with an order-disorder transition. Physical Review 65 (3-4), 117.
@@ -72,17 +74,23 @@ kinetic_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
   }
   check_if_proper_binary(x)
   if (!is.null(external_field)){
-    if (inherits(x, "matrix")){
-      if (!inherits(external_field, "matrix") ||
-          !identical(dim(x), dim(external_field))){
-        stop("`external_field` must be a matrix with the same dimensions as `x`",
-             call. = FALSE)
-      }
-    } else if (!inherits(external_field, "SpatRaster") ||
-               terra::nlyr(external_field) != 1 ||
-               !terra::compareGeom(x, external_field, stopOnError = FALSE)){
-      stop("`external_field` must be a single-layer SpatRaster with the same geometry as `x`",
+    is_matrix = inherits(x, "matrix")
+    same_grid = if (is_matrix){
+      inherits(external_field, "matrix") &&
+        identical(dim(x), dim(external_field))
+    } else {
+      inherits(external_field, "SpatRaster") &&
+        terra::compareGeom(x, external_field, lyrs = TRUE,
+                           stopOnError = FALSE)
+    }
+    if (!same_grid){
+      stop("`external_field` must match the type and geometry of `x`",
            call. = FALSE)
+    }
+    missing_field = if (is_matrix) anyNA(external_field[!is.na(x)]) else
+      terra::global(terra::ifel(is.na(x), 0, external_field), "anyNA")[[1]]
+    if (missing_field){
+      stop("`external_field` cannot be NA where `x` is not NA", call. = FALSE)
     }
   }
   if (version == 1){
@@ -237,14 +245,19 @@ energy_diff2 = function(focal, neigh, B, J, inertia) {
   return(en_diff)
 }
 
+local_values = function(x, rx, ry, n_rows, n_cols) {
+  rows = c(rx, (rx %% n_rows) + 1, ((rx - 2) %% n_rows) + 1, rx, rx)
+  cols = c(ry, ry, ry, (ry %% n_cols) + 1, ((ry - 2) %% n_cols) + 1)
+  cells = terra::cellFromRowCol(x, rows, cols)
+  x[cells][[1]]
+}
+
 single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols,
                                inertia, external_field) {
-  # neighbor sum
-  nb = input_matrix[(rx %% n_rows) + 1, ry] +
-    input_matrix[((rx - 2) %% n_rows) + 1, ry] +
-    input_matrix[rx, (ry %% n_cols) + 1] +
-    input_matrix[rx, ((ry - 2) %% n_cols) + 1]
-  fo = input_matrix[rx, ry]
+  values = local_values(input_matrix, rx, ry, n_rows, n_cols)
+  fo = values[1]
+  if (is.na(fo)) return(input_matrix)
+  nb = sum(values[-1], na.rm = TRUE)
   if (!is.null(external_field)) B = B + external_field[rx, ry][[1]]
   en_diff = energy_diff2(fo, nb, B, J, inertia)
   P = 1 / (1 + exp(en_diff))
@@ -256,12 +269,10 @@ single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols,
 
 single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows,
                                    n_cols, inertia, external_field) {
-  # neighbor sum
-  nb = input_matrix[(rx %% n_rows) + 1, ry] +
-    input_matrix[((rx - 2) %% n_rows) + 1, ry] +
-    input_matrix[rx, (ry %% n_cols) + 1] +
-    input_matrix[rx, ((ry - 2) %% n_cols) + 1]
-  fo = input_matrix[rx, ry]
+  values = local_values(input_matrix, rx, ry, n_rows, n_cols)
+  fo = values[1]
+  if (is.na(fo)) return(input_matrix)
+  nb = sum(values[-1], na.rm = TRUE)
   if (!is.null(external_field)) B = B + external_field[rx, ry][[1]]
   en_diff = energy_diff2(fo, nb, B, J, inertia)
   if (en_diff <= 0){ #<= or <?

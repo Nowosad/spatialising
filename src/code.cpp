@@ -6,6 +6,10 @@ int mod(int x, int y) {
   return r < 0 ? r + y : r;
 }
 
+double zero_if_na(double value) {
+  return NumericVector::is_na(value) ? 0 : value;
+}
+
 // [[Rcpp::export]]
 double energy_diff3(double focal, double neigh, double B, double J, double inertia) {
   double en_diff = 2 * (B + neigh * J) * focal;
@@ -27,12 +31,15 @@ NumericMatrix flip_glauber_rcpp(const NumericMatrix& input_matrix, const double&
     int rx = rxs[i], ry = rys[i];
     double rn = rns[i];
 
-    double nb = output_matrix(mod(rx, n_rows), ry - 1) +
-      output_matrix(mod((rx - 2), n_rows), ry - 1) +
-      output_matrix(rx - 1, mod(ry, n_cols)) +
-      output_matrix(rx - 1, mod((ry - 2), n_cols));
+    double nb = zero_if_na(output_matrix(mod(rx, n_rows), ry - 1)) +
+      zero_if_na(output_matrix(mod((rx - 2), n_rows), ry - 1)) +
+      zero_if_na(output_matrix(rx - 1, mod(ry, n_cols))) +
+      zero_if_na(output_matrix(rx - 1, mod((ry - 2), n_cols)));
 
     double fo = output_matrix(rx - 1, ry - 1);
+    if (NumericVector::is_na(fo)) {
+      continue;
+    }
     double local_B = B;
     if (external_field.size() > 0) {
       int field_index = (rx - 1) + (ry - 1) * n_rows;
@@ -59,12 +66,15 @@ NumericMatrix flip_metropolis2_rcpp(const NumericMatrix& input_matrix, const dou
     int rx = rxs[i], ry = rys[i];
     double rn = rns[i];
 
-    double nb = output_matrix(mod(rx, n_rows), ry - 1) +
-      output_matrix(mod((rx - 2), n_rows), ry - 1) +
-      output_matrix(rx - 1, mod(ry, n_cols)) +
-      output_matrix(rx - 1, mod((ry - 2), n_cols));
+    double nb = zero_if_na(output_matrix(mod(rx, n_rows), ry - 1)) +
+      zero_if_na(output_matrix(mod((rx - 2), n_rows), ry - 1)) +
+      zero_if_na(output_matrix(rx - 1, mod(ry, n_cols))) +
+      zero_if_na(output_matrix(rx - 1, mod((ry - 2), n_cols)));
 
     double fo = output_matrix(rx - 1, ry - 1);
+    if (NumericVector::is_na(fo)) {
+      continue;
+    }
     double local_B = B;
     if (external_field.size() > 0) {
       int field_index = (rx - 1) + (ry - 1) * n_rows;

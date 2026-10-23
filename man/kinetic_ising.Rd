@@ -18,7 +18,8 @@ kinetic_ising(
 )
 }
 \arguments{
-\item{x}{SpatRaster or matrix containing two values: -1 and 1}
+\item{x}{SpatRaster or matrix containing two values: -1 and 1. \code{NA} cells are
+excluded from the simulation.}
 
 \item{B}{External pressure (positive or negative): it tries to align cells' values with its sign}
 
@@ -44,7 +45,8 @@ is much slower}
 Values are on the same pressure scale as \code{B}: positive values favor \code{1},
 negative values favor \code{-1}, and zero has no effect. The field
 must be a matrix with the same dimensions as a matrix \code{x}, or a single-layer
-\code{SpatRaster} with the same geometry as a raster \code{x}.}
+\code{SpatRaster} with the same geometry as a raster \code{x}. Values may be \code{NA} only
+where \code{x} is \code{NA}.}
 }
 \value{
 Object of the same class as \code{x} with the number of layers specified by \code{updates}

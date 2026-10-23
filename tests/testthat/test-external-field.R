@@ -18,32 +18,44 @@ test_that("both versions use the same spatial field", {
                            20, 20, -20, -20,
                           -20, -20, 20, 20),
                         nrow = 3, byrow = TRUE)
-  x = terra::rast(matrix(-1, nrow = 3, ncol = 4))
+  x_matrix = matrix(-1, nrow = 3, ncol = 4)
+  x_matrix[2, 2] = NA
+  field_matrix[2, 2] = NA
+  x = terra::rast(x_matrix)
   field = terra::rast(field_matrix)
   expected = terra::values(terra::rast(ifelse(field_matrix > 0, 1, -1)))
 
-  set.seed(2)
-  v1 = kinetic_ising(x, B = 0, J = 0, iter = 200,
-                     external_field = field)
-  set.seed(2)
-  v2 = kinetic_ising(x, B = 0, J = 0, iter = 200, version = 2,
-                     external_field = field)
+  for (rule in c("glauber", "metropolis")) {
+    set.seed(2)
+    v1 = kinetic_ising(x, B = 0, J = 0, iter = 200, rule = rule,
+                       external_field = field)
+    set.seed(2)
+    v2 = kinetic_ising(x, B = 0, J = 0, iter = 200, rule = rule,
+                       version = 2, external_field = field)
 
-  expect_equal(terra::values(v1), terra::values(v2))
-  expect_equal(unname(terra::values(v1)), unname(expected))
+    expect_equal(terra::values(v1), terra::values(v2))
+    expect_equal(unname(terra::values(v1)), unname(expected))
+  }
 })
 
 test_that("external field dimensions must match x", {
   x = matrix(rep(c(-1, 1), 8), nrow = 4)
   expect_error(
     kinetic_ising(x, B = -0.3, J = 0.7, external_field = matrix(0, 2, 2)),
-    "same dimensions"
+    "type and geometry"
   )
 
   r = terra::rast(x)
   field = terra::rast(nrows = 2, ncols = 2)
   expect_error(
     kinetic_ising(r, B = -0.3, J = 0.7, external_field = field),
-    "same geometry"
+    "type and geometry"
+  )
+
+  field = matrix(0, nrow = 4, ncol = 4)
+  field[1, 1] = NA
+  expect_error(
+    kinetic_ising(x, B = -0.3, J = 0.7, external_field = field),
+    "cannot be NA"
   )
 })
