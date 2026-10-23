@@ -42,13 +42,23 @@ is much slower}
 
 \item{external_field}{Optional spatial adjustment added to \code{B} at each cell.
 Values are on the same pressure scale as \code{B}: positive values favor \code{1},
-negative values favor \code{-1}, and zero has no effect. If you have a
-probability map \code{p} between zero and one, use \code{0.5 * qlogis(p) - B} beforehand. The field
+negative values favor \code{-1}, and zero has no effect. The field
 must be a matrix with the same dimensions as a matrix \code{x}, or a single-layer
 \code{SpatRaster} with the same geometry as a raster \code{x}.}
 }
 \value{
 Object of the same class as \code{x} with the number of layers specified by \code{updates}
+}
+\details{
+To derive \code{external_field} from a probability map \code{p}, first convert the
+probabilities to local pressure using
+\code{external_field = 0.5 * qlogis(p) - B}.
+
+Exact probabilities of zero and one produce infinite pressure and therefore
+act as hard constraints. To keep the pressure finite, clip estimated
+probabilities before conversion, for example with
+\code{p = pmin(pmax(p, eps), 1 - eps)}. Smaller values of \code{eps} represent stronger
+classifier evidence.
 }
 \description{
 Performs simulations based on the given parameters of the Ising model
