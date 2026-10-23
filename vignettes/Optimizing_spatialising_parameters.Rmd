@@ -55,7 +55,7 @@ composition_index(c(maine2013, maine2016))
 Here, we can see an increase in the values of the m index between 2013 and 2016, which means that the forested area (`1`) had increased.
 
 The texture index ($t$) is an average over the entire site of the values of neighboring cells.
-It has a range from `0` to `1`, where `0` is a smooth, fine texture, and `1` is a coarse texture.
+It ranges from `-1` (unlike values are always adjacent) through `0` (no spatial association) to `1` (like values are always adjacent).
 
 ```{r}
 texture_index(c(maine2013, maine2016))
