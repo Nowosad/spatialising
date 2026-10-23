@@ -18,7 +18,7 @@ double energy_diff3(double focal, double neigh, double B, double J, double inert
 }
 
 // [[Rcpp::export]]
-NumericMatrix flip_glauber_rcpp(const NumericMatrix& input_matrix, const double& B, const double& J, const IntegerVector& rxs, const IntegerVector& rys, const NumericVector& rns, const int& n_rows, const int& n_cols, const double& inertia) {
+NumericMatrix flip_glauber_rcpp(const NumericMatrix& input_matrix, const double& B, const double& J, const IntegerVector& rxs, const IntegerVector& rys, const NumericVector& rns, const int& n_rows, const int& n_cols, const double& inertia, const NumericVector& external_field) {
 
   NumericMatrix output_matrix = clone(input_matrix);
   int n = rns.size();
@@ -33,7 +33,12 @@ NumericMatrix flip_glauber_rcpp(const NumericMatrix& input_matrix, const double&
       output_matrix(rx - 1, mod((ry - 2), n_cols));
 
     double fo = output_matrix(rx - 1, ry - 1);
-    double en_diff = energy_diff3(fo, nb, B, J, inertia);
+    double local_B = B;
+    if (external_field.size() > 0) {
+      int field_index = (rx - 1) + (ry - 1) * n_rows;
+      local_B += external_field[field_index];
+    }
+    double en_diff = energy_diff3(fo, nb, local_B, J, inertia);
     double P = 1 / (1 + exp(en_diff));
 
     if (P > rn) {
@@ -45,7 +50,7 @@ NumericMatrix flip_glauber_rcpp(const NumericMatrix& input_matrix, const double&
 }
 
 // [[Rcpp::export]]
-NumericMatrix flip_metropolis2_rcpp(const NumericMatrix& input_matrix, const double& B, const double& J, const IntegerVector& rxs, const IntegerVector& rys, const NumericVector& rns, const int& n_rows, const int& n_cols, const double& inertia) {
+NumericMatrix flip_metropolis2_rcpp(const NumericMatrix& input_matrix, const double& B, const double& J, const IntegerVector& rxs, const IntegerVector& rys, const NumericVector& rns, const int& n_rows, const int& n_cols, const double& inertia, const NumericVector& external_field) {
 
   NumericMatrix output_matrix = clone(input_matrix);
   int n = rns.size();
@@ -60,7 +65,12 @@ NumericMatrix flip_metropolis2_rcpp(const NumericMatrix& input_matrix, const dou
       output_matrix(rx - 1, mod((ry - 2), n_cols));
 
     double fo = output_matrix(rx - 1, ry - 1);
-    double en_diff = energy_diff3(fo, nb, B, J, inertia);
+    double local_B = B;
+    if (external_field.size() > 0) {
+      int field_index = (rx - 1) + (ry - 1) * n_rows;
+      local_B += external_field[field_index];
+    }
+    double en_diff = energy_diff3(fo, nb, local_B, J, inertia);
 
     if (en_diff <= 0){
       output_matrix(rx - 1, ry - 1) = -fo;

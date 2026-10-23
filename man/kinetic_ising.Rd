@@ -13,7 +13,8 @@ kinetic_ising(
   rule = "glauber",
   inertia = 0,
   version = 1,
-  progress = FALSE
+  progress = FALSE,
+  external_field = NULL
 )
 }
 \arguments{
@@ -38,6 +39,10 @@ By default it equals to the number of values in the input object.}
 is much slower}
 
 \item{progress}{TRUE/FALSE}
+
+\item{external_field}{Optional spatial adjustment added to \code{B} at each cell.
+It must be a matrix with the same dimensions as a matrix \code{x}, or a
+single-layer \code{SpatRaster} with the same geometry as a raster \code{x}.}
 }
 \value{
 Object of the same class as \code{x} with the number of layers specified by \code{updates}

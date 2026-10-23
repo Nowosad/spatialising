@@ -15,6 +15,9 @@
 #' (fast, but can be memory consuming); `version = 2` has a lower RAM impact, but
 #' is much slower
 #' @param progress TRUE/FALSE
+#' @param external_field Optional spatial adjustment added to `B` at each cell.
+#' It must be a matrix with the same dimensions as a matrix `x`, or a
+#' single-layer `SpatRaster` with the same geometry as a raster `x`.
 #'
 #' @references Ising, E., 1924. Beitrag zur theorie des ferro-und paramagnetismus. Ph.D. thesis, Grefe & Tiedemann.
 #' @references Onsager, L., 1944. Crystal statistics. I. A two-dimensional model with an order-disorder transition. Physical Review 65 (3-4), 117.
@@ -48,23 +51,43 @@
 #'   plot(ri3)
 #' }
 kinetic_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
-                         inertia = 0, version = 1, progress = FALSE){
+                         inertia = 0, version = 1, progress = FALSE,
+                         external_field = NULL){
   if (is.character(x)){
     is_char = TRUE
     x = terra::rast(x)
   }
   check_if_proper_binary(x)
+  if (!is.null(external_field)){
+    if (inherits(x, "matrix")){
+      if (!inherits(external_field, "matrix") ||
+          !identical(dim(x), dim(external_field))){
+        stop("`external_field` must be a matrix with the same dimensions as `x`",
+             call. = FALSE)
+      }
+    } else if (!inherits(external_field, "SpatRaster") ||
+               terra::nlyr(external_field) != 1 ||
+               !terra::compareGeom(x, external_field, stopOnError = FALSE)){
+      stop("`external_field` must be a single-layer SpatRaster with the same geometry as `x`",
+           call. = FALSE)
+    }
+  }
   if (version == 1){
     is_output_not_matrix = !inherits(x, "matrix")
     if (is_output_not_matrix){
       x_ext = terra::ext(x)
       x_crs = terra::crs(x)
       result = terra::as.matrix(x, wide = TRUE)
+      if (!is.null(external_field)){
+        external_field = terra::as.matrix(external_field, wide = TRUE)
+      }
     } else {
       result = x
     }
+    if (is.null(external_field)) external_field = numeric()
     result = kinetic_ising_matrix(x = result, B = B, J = J, updates = updates,
-                               iter = iter, rule = rule, inertia = inertia, progress = progress)
+                               iter = iter, rule = rule, inertia = inertia,
+                               progress = progress, external_field = external_field)
     if (is_output_not_matrix){
       result = terra::rast(result, crs = x_crs, extent = x_ext)
       names(result) = paste0("update", seq_len(updates))
@@ -73,7 +96,8 @@ kinetic_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
   } else if (version == 2){
     result = x
     result = kinetic_ising_terra(x = result, B = B, J = J, updates = updates,
-                               iter = iter, rule = rule, inertia = inertia, progress = progress)
+                               iter = iter, rule = rule, inertia = inertia,
+                               progress = progress, external_field = external_field)
     names(result) = paste0("update", seq_len(updates))
   }
   # if (is_char){
@@ -82,13 +106,16 @@ kinetic_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
   return(result)
 }
 
-kinetic_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia, progress = TRUE){
+kinetic_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia,
+                                progress = TRUE, external_field = numeric()){
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
     if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
     for (i in seq_len(updates + 1)[-1]){
-      y[[i]] = kinetic_ising_matrix(y[[i - 1]], B, J, updates = 1, iter, rule, inertia, progress = FALSE)
+      y[[i]] = kinetic_ising_matrix(y[[i - 1]], B, J, updates = 1, iter,
+                                    rule, inertia, progress = FALSE,
+                                    external_field = external_field)
       if (progress) utils::setTxtProgressBar(pb, i)
     }
     if (progress) close(pb)
@@ -102,9 +129,11 @@ kinetic_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia, progr
     rys = round(stats::runif(iter, min = 1, max = n_cols))
     rns = stats::runif(iter)
     if (rule == "glauber"){
-      x = flip_glauber_rcpp(x, B, J, rxs, rys, rns, n_rows, n_cols, inertia)
+      x = flip_glauber_rcpp(x, B, J, rxs, rys, rns, n_rows, n_cols, inertia,
+                            external_field)
     } else if (rule == "metropolis"){
-      x = flip_metropolis2_rcpp(x, B, J, rxs, rys, rns, n_rows, n_cols, inertia)
+      x = flip_metropolis2_rcpp(x, B, J, rxs, rys, rns, n_rows, n_cols,
+                                inertia, external_field)
     } else {
       stop()
     }
@@ -149,13 +178,16 @@ kinetic_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia, progr
 #   return(input_matrix)
 # }
 
-kinetic_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia, progress = TRUE){
+kinetic_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia,
+                               progress = TRUE, external_field = NULL){
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
     if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
     for (i in seq_len(updates + 1)[-1]){
-      y[[i]] = kinetic_ising_terra(y[[i - 1]], B, J, updates = 1, iter, rule, inertia, progress = FALSE)
+      y[[i]] = kinetic_ising_terra(y[[i - 1]], B, J, updates = 1, iter, rule,
+                                   inertia, progress = FALSE,
+                                   external_field = external_field)
       if (progress) utils::setTxtProgressBar(pb, i)
     }
     if (progress) close(pb)
@@ -170,9 +202,11 @@ kinetic_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia, progre
     rns = stats::runif(iter)
     for (i in seq_len(iter)){
       if (rule == "glauber"){
-        x = single_flip_glauber(x, B, J, rxs[i], rys[i], rns[i], n_rows, n_cols, inertia)
+        x = single_flip_glauber(x, B, J, rxs[i], rys[i], rns[i], n_rows,
+                                n_cols, inertia, external_field)
       } else if (rule == "metropolis"){
-        x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], rns[i], n_rows, n_cols, inertia)
+        x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], rns[i], n_rows,
+                                    n_cols, inertia, external_field)
       } else {
         stop()
       }
@@ -190,13 +224,15 @@ energy_diff2 = function(focal, neigh, B, J, inertia) {
   return(en_diff)
 }
 
-single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, inertia) {
+single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols,
+                               inertia, external_field) {
   # neighbor sum
   nb = input_matrix[(rx %% n_rows) + 1, ry] +
     input_matrix[((rx - 2) %% n_rows) + 1, ry] +
     input_matrix[rx, (ry %% n_cols) + 1] +
     input_matrix[rx, ((ry - 2) %% n_cols) + 1]
   fo = input_matrix[rx, ry]
+  if (!is.null(external_field)) B = B + external_field[rx, ry][[1]]
   en_diff = energy_diff2(fo, nb, B, J, inertia)
   P = 1 / (1 + exp(en_diff))
   if (P > rn){
@@ -205,13 +241,15 @@ single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, i
   return(input_matrix)
 }
 
-single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, inertia) {
+single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows,
+                                   n_cols, inertia, external_field) {
   # neighbor sum
   nb = input_matrix[(rx %% n_rows) + 1, ry] +
     input_matrix[((rx - 2) %% n_rows) + 1, ry] +
     input_matrix[rx, (ry %% n_cols) + 1] +
     input_matrix[rx, ((ry - 2) %% n_cols) + 1]
   fo = input_matrix[rx, ry]
+  if (!is.null(external_field)) B = B + external_field[rx, ry][[1]]
   en_diff = energy_diff2(fo, nb, B, J, inertia)
   if (en_diff <= 0){ #<= or <?
     input_matrix[rx, ry] = -fo
@@ -283,4 +321,3 @@ check_if_proper_binary = function(x){
         stop("The input raster can only contain values of -1 and 1", call. = FALSE)
     }
 }
-
