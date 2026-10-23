@@ -35,13 +35,14 @@
 #' @details
 #' To derive `external_field` from a probability map `p`, first convert the
 #' probabilities to local pressure using
-#' `external_field = 0.5 * qlogis(p) - B`.
+#' `external_field = 0.5 * log(p / (1 - p)) - B`.
 #'
 #' Exact probabilities of zero and one produce infinite pressure and therefore
 #' act as hard constraints. To keep the pressure finite, clip estimated
-#' probabilities before conversion, for example with
-#' `p = pmin(pmax(p, eps), 1 - eps)`. Smaller values of `eps` represent stronger
-#' classifier evidence.
+#' probabilities before conversion. For a matrix, use
+#' `p = pmin(pmax(p, eps), 1 - eps)`; for a `SpatRaster`, use
+#' `p = terra::clamp(p, eps, 1 - eps)`. Smaller values of `eps` represent
+#' stronger classifier evidence.
 #' @export
 #'
 #' @examples

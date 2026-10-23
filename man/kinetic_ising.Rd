@@ -57,13 +57,14 @@ Performs simulations based on the given parameters of the Ising model
 \details{
 To derive \code{external_field} from a probability map \code{p}, first convert the
 probabilities to local pressure using
-\code{external_field = 0.5 * qlogis(p) - B}.
+\code{external_field = 0.5 * log(p / (1 - p)) - B}.
 
 Exact probabilities of zero and one produce infinite pressure and therefore
 act as hard constraints. To keep the pressure finite, clip estimated
-probabilities before conversion, for example with
-\code{p = pmin(pmax(p, eps), 1 - eps)}. Smaller values of \code{eps} represent stronger
-classifier evidence.
+probabilities before conversion. For a matrix, use
+\code{p = pmin(pmax(p, eps), 1 - eps)}; for a \code{SpatRaster}, use
+\code{p = terra::clamp(p, eps, 1 - eps)}. Smaller values of \code{eps} represent
+stronger classifier evidence.
 }
 \examples{
 data(r_start, package = "spatialising")
