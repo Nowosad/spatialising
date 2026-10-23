@@ -16,8 +16,11 @@
 #' is much slower
 #' @param progress TRUE/FALSE
 #' @param external_field Optional spatial adjustment added to `B` at each cell.
-#' It must be a matrix with the same dimensions as a matrix `x`, or a
-#' single-layer `SpatRaster` with the same geometry as a raster `x`.
+#' Values are on the same pressure scale as `B`: positive values favor `1`,
+#' negative values favor `-1`, and zero has no effect. If you have a
+#' probability map `p` between zero and one, use `0.5 * qlogis(p) - B` beforehand. The field
+#' must be a matrix with the same dimensions as a matrix `x`, or a single-layer
+#' `SpatRaster` with the same geometry as a raster `x`.
 #'
 #' @references Ising, E., 1924. Beitrag zur theorie des ferro-und paramagnetismus. Ph.D. thesis, Grefe & Tiedemann.
 #' @references Onsager, L., 1944. Crystal statistics. I. A two-dimensional model with an order-disorder transition. Physical Review 65 (3-4), 117.
