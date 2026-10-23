@@ -69,8 +69,28 @@ kinetic_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
                          inertia = 0, version = 1, progress = FALSE,
                          external_field = NULL){
   if (is.character(x)){
-    is_char = TRUE
     x = terra::rast(x)
+  }
+  rule = match.arg(rule, c("glauber", "metropolis"))
+  if (!inherits(x, c("matrix", "SpatRaster"))){
+    stop("`x` must be a matrix or SpatRaster", call. = FALSE)
+  }
+  if (inherits(x, "SpatRaster") && terra::nlyr(x) != 1){
+    stop("`x` must be a single-layer SpatRaster", call. = FALSE)
+  }
+  if (length(version) != 1 || is.na(version) || !version %in% c(1, 2)){
+    stop("`version` must be 1 or 2", call. = FALSE)
+  }
+  if (version == 2 && inherits(x, "matrix")){
+    stop("`version = 2` requires a SpatRaster", call. = FALSE)
+  }
+  if (!is.numeric(updates) || length(updates) != 1 ||
+      !is.finite(updates) || updates < 1 || updates %% 1 != 0){
+    stop("`updates` must be a positive integer", call. = FALSE)
+  }
+  if (!missing(iter) && (!is.numeric(iter) || length(iter) != 1 ||
+      !is.finite(iter) || iter < 1 || iter %% 1 != 0)){
+    stop("`iter` must be a positive integer", call. = FALSE)
   }
   check_if_proper_binary(x)
   if (!is.null(external_field)){
@@ -121,9 +141,6 @@ kinetic_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
                                progress = progress, external_field = external_field)
     names(result) = paste0("update", seq_len(updates))
   }
-  # if (is_char){
-  #   result = wrap(result)
-  # }
   return(result)
 }
 
@@ -331,17 +348,11 @@ single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows,
 # }
 
 check_if_proper_binary = function(x){
-    if (inherits(x, "matrix")){
-        sample_size = c(length(x), 10000)
-        s = sample(x, size = sample_size[which.min(c(length(x), 10000))])
-    } else {
-        x_ncell = terra::ncell(x)
-        sample_size = c(x_ncell, 10000)
-        s_id = sample(seq_len(x_ncell), size = sample_size[which.min(c(x_ncell, 10000))])
-        s = terra::extract(x, s_id)[[1]]
-    }
-    unique_s = unique(s)
-    if (!all(unique_s %in% c(-1, 1) | is.na(unique_s))){
-        stop("The input raster can only contain values of -1 and 1", call. = FALSE)
-    }
+  n = if (inherits(x, "matrix")) length(x) else terra::ncell(x)
+  # Keep validation bounded for large inputs without using the random-number state.
+  ids = unique(round(seq(1, n, length.out = min(n, 10000))))
+  values = if (inherits(x, "matrix")) x[ids] else terra::extract(x, ids)[[1]]
+  if (!all(values %in% c(-1, 1) | is.na(values))){
+    stop("`x` can only contain values of -1 and 1", call. = FALSE)
+  }
 }
