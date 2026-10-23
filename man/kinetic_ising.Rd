@@ -51,6 +51,9 @@ where \code{x} is \code{NA}.}
 \value{
 Object of the same class as \code{x} with the number of layers specified by \code{updates}
 }
+\description{
+Performs simulations based on the given parameters of the Ising model
+}
 \details{
 To derive \code{external_field} from a probability map \code{p}, first convert the
 probabilities to local pressure using
@@ -61,9 +64,6 @@ act as hard constraints. To keep the pressure finite, clip estimated
 probabilities before conversion, for example with
 \code{p = pmin(pmax(p, eps), 1 - eps)}. Smaller values of \code{eps} represent stronger
 classifier evidence.
-}
-\description{
-Performs simulations based on the given parameters of the Ising model
 }
 \examples{
 data(r_start, package = "spatialising")
