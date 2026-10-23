@@ -13,11 +13,13 @@ kinetic_ising(
   rule = "glauber",
   inertia = 0,
   version = 1,
-  progress = FALSE
+  progress = FALSE,
+  external_field = NULL
 )
 }
 \arguments{
-\item{x}{SpatRaster or matrix containing two values: -1 and 1}
+\item{x}{SpatRaster or matrix containing two values: -1 and 1. \code{NA} cells are
+excluded from the simulation.}
 
 \item{B}{External pressure (positive or negative): it tries to align cells' values with its sign}
 
@@ -38,12 +40,31 @@ By default it equals to the number of values in the input object.}
 is much slower}
 
 \item{progress}{TRUE/FALSE}
+
+\item{external_field}{Optional spatial adjustment added to \code{B} at each cell.
+Values are on the same pressure scale as \code{B}: positive values favor \code{1},
+negative values favor \code{-1}, and zero has no effect. The field
+must be a matrix with the same dimensions as a matrix \code{x}, or a single-layer
+\code{SpatRaster} with the same geometry as a raster \code{x}. Values may be \code{NA} only
+where \code{x} is \code{NA}.}
 }
 \value{
 Object of the same class as \code{x} with the number of layers specified by \code{updates}
 }
 \description{
 Performs simulations based on the given parameters of the Ising model
+}
+\details{
+To derive \code{external_field} from a probability map \code{p}, first convert the
+probabilities to local pressure using
+\code{external_field = 0.5 * log(p / (1 - p)) - B}.
+
+Exact probabilities of zero and one produce infinite pressure and therefore
+act as hard constraints. To keep the pressure finite, clip estimated
+probabilities before conversion. For a matrix, use
+\code{p = pmin(pmax(p, eps), 1 - eps)}; for a \code{SpatRaster}, use
+\code{p = terra::clamp(p, eps, 1 - eps)}. Smaller values of \code{eps} represent
+stronger classifier evidence.
 }
 \examples{
 data(r_start, package = "spatialising")

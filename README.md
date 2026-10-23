@@ -46,7 +46,7 @@ r1 = rast(system.file("raster/r_start.tif", package = "spatialising"))
 plot(r1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" alt="" width="100%" />
 
 Most of the raster area is covered with the value of `1`, and just about
 5% of the area is covered with the value of `-1`. The main function in
@@ -61,7 +61,7 @@ r2 = kinetic_ising(r1, B = -0.3, J = 0.7)
 plot(r2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" alt="" width="100%" />
 
 The `kinetic_ising()` function also has a fourth argument called
 `updates`. By default, it equals to `1`, returning just one raster as
@@ -74,7 +74,7 @@ ri1 = kinetic_ising(r1, B = -0.3, J = 0.7, updates = 3)
 plot(ri1, nr = 1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" alt="" width="100%" />
 
 Obtained results depend greatly on the set values of `B` and `J`. In the
 example above, values of `B = -0.3` and `J = 0.7` resulted in expansion
@@ -88,7 +88,7 @@ ri2 = kinetic_ising(r1, B = 0.3, J = 0.7, updates = 3)
 plot(ri2, nr = 1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />
 
 Finally, in the last example, we set values of `B = -0.3` and `J = 0.4`.
 Note that the result shows much more prominent data change, with a
@@ -99,7 +99,7 @@ ri3 = kinetic_ising(r1, B = -0.3, J = 0.4, updates = 3)
 plot(ri3, nr = 1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
 
 ## Documentation
 

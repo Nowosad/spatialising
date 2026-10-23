@@ -5,11 +5,11 @@ energy_diff3 <- function(focal, neigh, B, J, inertia) {
     .Call(`_spatialising_energy_diff3`, focal, neigh, B, J, inertia)
 }
 
-flip_glauber_rcpp <- function(input_matrix, B, J, rxs, rys, rns, n_rows, n_cols, inertia) {
-    .Call(`_spatialising_flip_glauber_rcpp`, input_matrix, B, J, rxs, rys, rns, n_rows, n_cols, inertia)
+flip_glauber_rcpp <- function(input_matrix, B, J, rxs, rys, rns, n_rows, n_cols, inertia, external_field) {
+    .Call(`_spatialising_flip_glauber_rcpp`, input_matrix, B, J, rxs, rys, rns, n_rows, n_cols, inertia, external_field)
 }
 
-flip_metropolis2_rcpp <- function(input_matrix, B, J, rxs, rys, rns, n_rows, n_cols, inertia) {
-    .Call(`_spatialising_flip_metropolis2_rcpp`, input_matrix, B, J, rxs, rys, rns, n_rows, n_cols, inertia)
+flip_metropolis2_rcpp <- function(input_matrix, B, J, rxs, rys, rns, n_rows, n_cols, inertia, external_field) {
+    .Call(`_spatialising_flip_metropolis2_rcpp`, input_matrix, B, J, rxs, rys, rns, n_rows, n_cols, inertia, external_field)
 }
 

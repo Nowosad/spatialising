@@ -16,7 +16,7 @@ A numeric vector
 Calculates composition imbalance index (also known as the m index) -- a sum of cell’s values
 over the entire site divided by the number of cell in the site.
 m has a range from -1 (site completely dominated by the -1 values) to
-1 (site completely dominated by the 1 values).
+1 (site completely dominated by the 1 values). Missing cells are ignored.
 }
 \examples{
 data(r_start, package = "spatialising")

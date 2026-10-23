@@ -19,3 +19,11 @@ devtools::load_all()
 r_end = kinetic_ising(r_start, B = -0.3, J = 0.7, rule = "metropolis")
 usethis::use_data(r_end, overwrite = TRUE)
 
+maine2013 = rast("inst/raster/maine2013.tif")
+border = boundaries(maine2013, classes = TRUE, directions = 4,
+                    ignoreNA = TRUE)
+change_probability = ifel(border == 1, 0.25, 0.05)
+p = ifel(maine2013 == 1, 1 - change_probability, change_probability)
+names(p) = "probability"
+writeRaster(p, "inst/raster/maine_probability.tif", gdal = "of=COG",
+            overwrite = TRUE)

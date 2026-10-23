@@ -2,7 +2,8 @@
 #'
 #' Performs simulations based on the given parameters of the Ising model
 #'
-#' @param x SpatRaster or matrix containing two values: -1 and 1
+#' @param x SpatRaster or matrix containing two values: -1 and 1. `NA` cells are
+#' excluded from the simulation.
 #' @param B External pressure (positive or negative): it tries to align cells' values with its sign
 #' @param J Strength of the local autocorrelation tendency (always positive): it tries to align signs of neighboring cells
 #' @param updates Specifies how many sets of iterations are performed on the input object.
@@ -15,6 +16,12 @@
 #' (fast, but can be memory consuming); `version = 2` has a lower RAM impact, but
 #' is much slower
 #' @param progress TRUE/FALSE
+#' @param external_field Optional spatial adjustment added to `B` at each cell.
+#' Values are on the same pressure scale as `B`: positive values favor `1`,
+#' negative values favor `-1`, and zero has no effect. The field
+#' must be a matrix with the same dimensions as a matrix `x`, or a single-layer
+#' `SpatRaster` with the same geometry as a raster `x`. Values may be `NA` only
+#' where `x` is `NA`.
 #'
 #' @references Ising, E., 1924. Beitrag zur theorie des ferro-und paramagnetismus. Ph.D. thesis, Grefe & Tiedemann.
 #' @references Onsager, L., 1944. Crystal statistics. I. A two-dimensional model with an order-disorder transition. Physical Review 65 (3-4), 117.
@@ -24,6 +31,18 @@
 #' @importFrom Rcpp evalCpp
 #'
 #' @return Object of the same class as `x` with the number of layers specified by `updates`
+#'
+#' @details
+#' To derive `external_field` from a probability map `p`, first convert the
+#' probabilities to local pressure using
+#' `external_field = 0.5 * log(p / (1 - p)) - B`.
+#'
+#' Exact probabilities of zero and one produce infinite pressure and therefore
+#' act as hard constraints. To keep the pressure finite, clip estimated
+#' probabilities before conversion. For a matrix, use
+#' `p = pmin(pmax(p, eps), 1 - eps)`; for a `SpatRaster`, use
+#' `p = terra::clamp(p, eps, 1 - eps)`. Smaller values of `eps` represent
+#' stronger classifier evidence.
 #' @export
 #'
 #' @examples
@@ -48,23 +67,69 @@
 #'   plot(ri3)
 #' }
 kinetic_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
-                         inertia = 0, version = 1, progress = FALSE){
+                         inertia = 0, version = 1, progress = FALSE,
+                         external_field = NULL){
   if (is.character(x)){
-    is_char = TRUE
     x = terra::rast(x)
   }
+  rule = match.arg(rule, c("glauber", "metropolis"))
+  if (!inherits(x, c("matrix", "SpatRaster"))){
+    stop("`x` must be a matrix or SpatRaster", call. = FALSE)
+  }
+  if (inherits(x, "SpatRaster") && terra::nlyr(x) != 1){
+    stop("`x` must be a single-layer SpatRaster", call. = FALSE)
+  }
+  if (length(version) != 1 || is.na(version) || !version %in% c(1, 2)){
+    stop("`version` must be 1 or 2", call. = FALSE)
+  }
+  if (version == 2 && inherits(x, "matrix")){
+    stop("`version = 2` requires a SpatRaster", call. = FALSE)
+  }
+  if (!is.numeric(updates) || length(updates) != 1 ||
+      !is.finite(updates) || updates < 1 || updates %% 1 != 0){
+    stop("`updates` must be a positive integer", call. = FALSE)
+  }
+  if (!missing(iter) && (!is.numeric(iter) || length(iter) != 1 ||
+      !is.finite(iter) || iter < 1 || iter %% 1 != 0)){
+    stop("`iter` must be a positive integer", call. = FALSE)
+  }
   check_if_proper_binary(x)
+  if (!is.null(external_field)){
+    is_matrix = inherits(x, "matrix")
+    same_grid = if (is_matrix){
+      inherits(external_field, "matrix") &&
+        identical(dim(x), dim(external_field))
+    } else {
+      inherits(external_field, "SpatRaster") &&
+        terra::compareGeom(x, external_field, lyrs = TRUE,
+                           stopOnError = FALSE)
+    }
+    if (!same_grid){
+      stop("`external_field` must match the type and geometry of `x`",
+           call. = FALSE)
+    }
+    missing_field = if (is_matrix) anyNA(external_field[!is.na(x)]) else
+      terra::global(terra::ifel(is.na(x), 0, external_field), "anyNA")[[1]]
+    if (missing_field){
+      stop("`external_field` cannot be NA where `x` is not NA", call. = FALSE)
+    }
+  }
   if (version == 1){
     is_output_not_matrix = !inherits(x, "matrix")
     if (is_output_not_matrix){
       x_ext = terra::ext(x)
       x_crs = terra::crs(x)
       result = terra::as.matrix(x, wide = TRUE)
+      if (!is.null(external_field)){
+        external_field = terra::as.matrix(external_field, wide = TRUE)
+      }
     } else {
       result = x
     }
+    if (is.null(external_field)) external_field = numeric()
     result = kinetic_ising_matrix(x = result, B = B, J = J, updates = updates,
-                               iter = iter, rule = rule, inertia = inertia, progress = progress)
+                               iter = iter, rule = rule, inertia = inertia,
+                               progress = progress, external_field = external_field)
     if (is_output_not_matrix){
       result = terra::rast(result, crs = x_crs, extent = x_ext)
       names(result) = paste0("update", seq_len(updates))
@@ -73,22 +138,23 @@ kinetic_ising = function(x, B, J, updates = 1, iter, rule = "glauber",
   } else if (version == 2){
     result = x
     result = kinetic_ising_terra(x = result, B = B, J = J, updates = updates,
-                               iter = iter, rule = rule, inertia = inertia, progress = progress)
+                               iter = iter, rule = rule, inertia = inertia,
+                               progress = progress, external_field = external_field)
     names(result) = paste0("update", seq_len(updates))
   }
-  # if (is_char){
-  #   result = wrap(result)
-  # }
   return(result)
 }
 
-kinetic_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia, progress = TRUE){
+kinetic_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia,
+                                progress = TRUE, external_field = numeric()){
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
     if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
     for (i in seq_len(updates + 1)[-1]){
-      y[[i]] = kinetic_ising_matrix(y[[i - 1]], B, J, updates = 1, iter, rule, inertia, progress = FALSE)
+      y[[i]] = kinetic_ising_matrix(y[[i - 1]], B, J, updates = 1, iter,
+                                    rule, inertia, progress = FALSE,
+                                    external_field = external_field)
       if (progress) utils::setTxtProgressBar(pb, i)
     }
     if (progress) close(pb)
@@ -98,13 +164,15 @@ kinetic_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia, progr
     if (missing(iter)){
       iter = n_rows * n_cols
     }
-    rxs = round(stats::runif(iter, min = 1, max = n_rows))
-    rys = round(stats::runif(iter, min = 1, max = n_cols))
+    rxs = sample.int(n_rows, iter, replace = TRUE)
+    rys = sample.int(n_cols, iter, replace = TRUE)
     rns = stats::runif(iter)
     if (rule == "glauber"){
-      x = flip_glauber_rcpp(x, B, J, rxs, rys, rns, n_rows, n_cols, inertia)
+      x = flip_glauber_rcpp(x, B, J, rxs, rys, rns, n_rows, n_cols, inertia,
+                            external_field)
     } else if (rule == "metropolis"){
-      x = flip_metropolis2_rcpp(x, B, J, rxs, rys, rns, n_rows, n_cols, inertia)
+      x = flip_metropolis2_rcpp(x, B, J, rxs, rys, rns, n_rows, n_cols,
+                                inertia, external_field)
     } else {
       stop()
     }
@@ -112,50 +180,16 @@ kinetic_ising_matrix = function(x, B, J, updates = 1, iter, rule, inertia, progr
   return(x)
 }
 
-
-# rcpp is used instead here
-# flip_glauber = function(input_matrix, B, J, rxs, rys, rns, n_rows, n_cols, inertia) {
-#   for (i in seq_along(rns)){
-#     rx = rxs[i]; ry = rys[i]; rn = rns[i]
-#     # neighbor sum
-#     nb = input_matrix[(rx %% n_rows) + 1, ry] + input_matrix[((rx - 2) %% n_rows) + 1, ry] +
-#       input_matrix[rx, (ry %% n_cols) + 1] + input_matrix[rx, ((ry - 2) %% n_cols) + 1]
-#     fo = input_matrix[rx, ry]
-#     en_diff = energy_diff2(fo, nb, B, J, inertia)
-#     P = 1 / (1 + exp(en_diff))
-#     if (P > rn){
-#       input_matrix[rx, ry] = -fo
-#     }
-#   }
-#   return(input_matrix)
-# }
-#
-
-# rcpp is used instead here
-# flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, inertia) {
-#   for (i in seq_along(rns)){
-#     rx = rxs[i]; ry = rys[i]; rn = rns[i]
-#     # neighbor sum
-#     nb = input_matrix[(rx %% n_rows) + 1, ry] + input_matrix[((rx - 2) %% n_rows) + 1, ry] +
-#       input_matrix[rx, (ry %% n_cols) + 1] + input_matrix[rx, ((ry - 2) %% n_cols) + 1]
-#     fo = input_matrix[rx, ry]
-#     en_diff = energy_diff2(fo, nb, B, J, inertia)
-#     if (en_diff <= 0){ #<= or <?
-#       input_matrix[rx, ry] = -fo
-#     } else if (rn < exp(-en_diff)){
-#       input_matrix[rx, ry] = -fo
-#     }
-#   }
-#   return(input_matrix)
-# }
-
-kinetic_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia, progress = TRUE){
+kinetic_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia,
+                               progress = TRUE, external_field = NULL){
   if (updates > 1){
     y = vector(mode = "list", length = updates + 1)
     y[[1]] = x
     if (progress) pb = utils::txtProgressBar(min = 2, max = updates + 1, style = 3)
     for (i in seq_len(updates + 1)[-1]){
-      y[[i]] = kinetic_ising_terra(y[[i - 1]], B, J, updates = 1, iter, rule, inertia, progress = FALSE)
+      y[[i]] = kinetic_ising_terra(y[[i - 1]], B, J, updates = 1, iter, rule,
+                                   inertia, progress = FALSE,
+                                   external_field = external_field)
       if (progress) utils::setTxtProgressBar(pb, i)
     }
     if (progress) close(pb)
@@ -165,14 +199,16 @@ kinetic_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia, progre
     if (missing(iter)){
       iter = n_rows * n_cols
     }
-    rxs = round(stats::runif(iter, min = 1, max = n_rows))
-    rys = round(stats::runif(iter, min = 1, max = n_cols))
+    rxs = sample.int(n_rows, iter, replace = TRUE)
+    rys = sample.int(n_cols, iter, replace = TRUE)
     rns = stats::runif(iter)
     for (i in seq_len(iter)){
       if (rule == "glauber"){
-        x = single_flip_glauber(x, B, J, rxs[i], rys[i], rns[i], n_rows, n_cols, inertia)
+        x = single_flip_glauber(x, B, J, rxs[i], rys[i], rns[i], n_rows,
+                                n_cols, inertia, external_field)
       } else if (rule == "metropolis"){
-        x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], rns[i], n_rows, n_cols, inertia)
+        x = single_flip_metropolis2(x, B, J, rxs[i], rys[i], rns[i], n_rows,
+                                    n_cols, inertia, external_field)
       } else {
         stop()
       }
@@ -183,20 +219,26 @@ kinetic_ising_terra = function(x, B, J, updates = 1, iter, rule, inertia, progre
 
 energy_diff2 = function(focal, neigh, B, J, inertia) {
   en_diff = 2 * (B + neigh * J) * focal
-  # if ((fo == -1 && nb == -4) || (fo == 1 && nb == 4)){
   if (focal == -1 && neigh == -4){
     en_diff = en_diff + inertia
   }
   return(en_diff)
 }
 
-single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, inertia) {
-  # neighbor sum
-  nb = input_matrix[(rx %% n_rows) + 1, ry] +
-    input_matrix[((rx - 2) %% n_rows) + 1, ry] +
-    input_matrix[rx, (ry %% n_cols) + 1] +
-    input_matrix[rx, ((ry - 2) %% n_cols) + 1]
-  fo = input_matrix[rx, ry]
+local_values = function(x, rx, ry, n_rows, n_cols) {
+  rows = c(rx, (rx %% n_rows) + 1, ((rx - 2) %% n_rows) + 1, rx, rx)
+  cols = c(ry, ry, ry, (ry %% n_cols) + 1, ((ry - 2) %% n_cols) + 1)
+  cells = terra::cellFromRowCol(x, rows, cols)
+  x[cells][[1]]
+}
+
+single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols,
+                               inertia, external_field) {
+  values = local_values(input_matrix, rx, ry, n_rows, n_cols)
+  fo = values[1]
+  if (is.na(fo)) return(input_matrix)
+  nb = sum(values[-1], na.rm = TRUE)
+  if (!is.null(external_field)) B = B + external_field[rx, ry][[1]]
   en_diff = energy_diff2(fo, nb, B, J, inertia)
   P = 1 / (1 + exp(en_diff))
   if (P > rn){
@@ -205,15 +247,15 @@ single_flip_glauber = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, i
   return(input_matrix)
 }
 
-single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows, n_cols, inertia) {
-  # neighbor sum
-  nb = input_matrix[(rx %% n_rows) + 1, ry] +
-    input_matrix[((rx - 2) %% n_rows) + 1, ry] +
-    input_matrix[rx, (ry %% n_cols) + 1] +
-    input_matrix[rx, ((ry - 2) %% n_cols) + 1]
-  fo = input_matrix[rx, ry]
+single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows,
+                                   n_cols, inertia, external_field) {
+  values = local_values(input_matrix, rx, ry, n_rows, n_cols)
+  fo = values[1]
+  if (is.na(fo)) return(input_matrix)
+  nb = sum(values[-1], na.rm = TRUE)
+  if (!is.null(external_field)) B = B + external_field[rx, ry][[1]]
   en_diff = energy_diff2(fo, nb, B, J, inertia)
-  if (en_diff <= 0){ #<= or <?
+  if (en_diff <= 0){
     input_matrix[rx, ry] = -fo
   } else if (rn < exp(-en_diff)){
     input_matrix[rx, ry] = -fo
@@ -221,66 +263,12 @@ single_flip_metropolis2 = function(input_matrix, B, J, rx, ry, rn, n_rows, n_col
   return(input_matrix)
 }
 
-# slow, legacy code:
-# energy_diff_metropolis = function(focal, neigh, B, J){
-#   if (focal == 1){
-#     if (neigh == 4){
-#       2 * (B + 4 * J)
-#     } else if (neigh == 2){
-#       2 * (B + 2 * J)
-#     } else if (neigh == 0){
-#       2 * (B + 0 * J)
-#     } else if (neigh == -2){
-#       2 * (B - 2 * J)
-#     } else if (neigh == -4){
-#       2 * (B - 4 * J)
-#     }
-#   } else if (focal == -1){
-#     if (neigh == 4){
-#       -2 * (B + 4 * J)
-#     } else if (neigh == 2){
-#       -2 * (B + 2 * J)
-#     } else if (neigh == 0){
-#       -2 * (B + 0 * J)
-#     } else if (neigh == -2){
-#       -2 * (B - 2 * J)
-#     } else if (neigh == -4){
-#       -2 * (B - 4 * J)
-#     }
-#   }
-# }
-
-# single_flip_metropolis = function(input_matrix, B, J) {
-#   n_rows = nrow(input_matrix)
-#   n_cols = ncol(input_matrix)
-#   # choose random spin
-#   x = round(stats::runif(1, min = 1, max = n_rows))
-#   y = round(stats::runif(1, min = 1, max = n_cols))
-#   # neighbor sum
-#   nb = input_matrix[(x %% n_rows) + 1, y] + input_matrix[((x - 2) %% n_rows) + 1, y] +
-#     input_matrix[x, (y %% n_cols) + 1] + input_matrix[x, ((y - 2) %% n_cols) + 1]
-#   fo = input_matrix[x, y]
-#   if (energy_diff_metropolis(fo, nb, B, J) <= 0){ #<= or <?
-#     input_matrix[x, y] = -input_matrix[x, y]
-#   } else if (stats::runif(1) < exp(-energy_diff_metropolis(fo, nb, B, J))){
-#     input_matrix[x, y] = -input_matrix[x, y]
-#   }
-#   return(input_matrix)
-# }
-
 check_if_proper_binary = function(x){
-    if (inherits(x, "matrix")){
-        sample_size = c(length(x), 10000)
-        s = sample(x, size = sample_size[which.min(c(length(x), 10000))])
-    } else {
-        x_ncell = terra::ncell(x)
-        sample_size = c(x_ncell, 10000)
-        s_id = sample(seq_len(x_ncell), size = sample_size[which.min(c(x_ncell, 10000))])
-        s = terra::extract(x, s_id)[[1]]
-    }
-    unique_s = unique(s)
-    if (!all(unique_s %in% c(-1, 1) | is.na(unique_s))){
-        stop("The input raster can only contain values of -1 and 1", call. = FALSE)
-    }
+  n = if (inherits(x, "matrix")) length(x) else terra::ncell(x)
+  # Keep validation bounded for large inputs without using the random-number state.
+  ids = unique(round(seq(1, n, length.out = min(n, 10000))))
+  values = if (inherits(x, "matrix")) x[ids] else terra::extract(x, ids)[[1]]
+  if (!all(values %in% c(-1, 1) | is.na(values))){
+    stop("`x` can only contain values of -1 and 1", call. = FALSE)
+  }
 }
-

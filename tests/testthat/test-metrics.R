@@ -19,3 +19,12 @@ test_that("calculations of metrics works", {
   expect_equal(length(m3), 1)
   expect_true(ti3 == 1)
 })
+
+test_that("metrics ignore masked cells", {
+  x = matrix(c(-1, 1, 1, NA), nrow = 2)
+  r = terra::rast(x)
+
+  expect_equal(composition_index(x), 1 / 3)
+  expect_equal(composition_index(r), 1 / 3)
+  expect_equal(texture_index(x), texture_index(r))
+})

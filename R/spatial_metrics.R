@@ -3,7 +3,7 @@
 #' Calculates composition imbalance index (also known as the m index) -- a sum of cell’s values
 #' over the entire site divided by the number of cell in the site.
 #' m has a range from -1 (site completely dominated by the -1 values) to
-#' 1 (site completely dominated by the 1 values).
+#' 1 (site completely dominated by the 1 values). Missing cells are ignored.
 #'
 #' @param x SpatRaster or matrix containing two values: -1 and 1
 #'
@@ -28,17 +28,18 @@
 #' }
 composition_index = function(x){
   if (inherits(x, "matrix")){
-    sum(x) / length(x)
+    mean(x, na.rm = TRUE)
   } else if (inherits(x, "array")) {
-    apply(x, 3, sum) / apply(x, 3, length)
+    apply(x, 3, mean, na.rm = TRUE)
   } else {
-    terra::global(x, "sum", na.rm = TRUE)$sum / terra::global(x, "notNA", na.rm = FALSE)$notNA
+    terra::global(x, "mean", na.rm = TRUE)$mean
   }
 }
 #' Texture index
 #'
-#' Calculates texture index -- an average (over an array) of a product of the values of neighboring cells.
-#' The value of texture index is between 0 (fine texture), and 1 (coarse texture).
+#' Calculates the mean product of neighboring, non-missing cell values.
+#' The texture index ranges from -1 (unlike values are always adjacent) through
+#' 0 (no spatial association) to 1 (like values are always adjacent).
 #'
 #' @param x SpatRaster or matrix containing two values: -1 and 1
 #' @param ... Arguments for [comat::get_coma()]
