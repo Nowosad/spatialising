@@ -20,6 +20,9 @@ knitr::opts_chunk$set(
 Positive values of `B` favor class `1`, negative values favor class `-1`, and larger absolute values have a stronger effect across the pattern.
 Larger values of `J` make neighboring cells more likely to have the same class, creating larger patches and reducing isolated cells.
 
+The simulation uses periodic boundary conditions, so cells on opposite edges of the raster are treated as neighbors.
+This is standard in Ising models, but it may not represent the boundaries of every geographic study area.
+
 By default, `B` is constant across all cells, but `external_field` allows a different adjustment for each cell, for example based on a spatial probability map.
 At cell $i$, the effective external pressure is then $B + \mathtt{external\_field}_i$.
 Let's see that on an example.
@@ -68,6 +71,9 @@ Because `B = 0` in this example, the converted values can be used directly as `e
 B = 0
 external_field = 0.5 * log(p / (1 - p)) - B
 ```
+
+Here, `p` sets the local preference between the two classes: values above 0.5 favor `1`, and values below 0.5 favor `-1`.
+It is, however, not the final probability map: neighboring cells and random updates also shape the result.
 
 The value `J = 0.3` (local interaction strength) is chosen only for this illustration.
 Using the same random seed makes it easier to compare the effect of the spatial field.
